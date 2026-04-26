@@ -289,39 +289,8 @@ func exportMarkdown(report ScanReport, filename string) error {
 	}
 	defer file.Close()
 
-	// Write markdown header
-	_, err = file.WriteString(fmt.Sprintf("# IoT Security Scan Report\n\n"))
-	if err != nil {
-		return err
-	}
-
-	// Write scan summary
-	_, err = file.WriteString(fmt.Sprintf("## Summary\n\n"))
-	if err != nil {
-		return err
-	}
-
-	_, err = file.WriteString(fmt.Sprintf("- **Scan Time**: %s\n", report.Timestamp.Format(time.RFC3339)))
-	if err != nil {
-		return err
-	}
-
-	_, err = file.WriteString(fmt.Sprintf("- **Network Range**: %s\n", report.NetworkRange))
-	if err != nil {
-		return err
-	}
-
-	_, err = file.WriteString(fmt.Sprintf("- **Total Devices**: %d\n", report.TotalDevices))
-	if err != nil {
-		return err
-	}
-
-	_, err = file.WriteString(fmt.Sprintf("- **Vulnerable Devices**: %d\n", report.VulnerableCount))
-	if err != nil {
-		return err
-	}
-
-	_, err = file.WriteString(fmt.Sprintf("- **Scan Duration**: %v\n\n", report.ScanDuration))
+	_, err = fmt.Fprintf(file, "# IoT Security Scan Report\n\n## Summary\n\n- **Scan Time**: %s\n- **Network Range**: %s\n- **Total Devices**: %d\n- **Vulnerable Devices**: %d\n- **Scan Duration**: %v\n\n",
+		report.Timestamp.Format(time.RFC3339), report.NetworkRange, report.TotalDevices, report.VulnerableCount, report.ScanDuration)
 	if err != nil {
 		return err
 	}

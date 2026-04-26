@@ -1,248 +1,422 @@
 # IoT Device Security Scanner
 
-An advanced network security scanner written in Go that identifies IoT devices on a network, fingerprints them, and performs comprehensive security assessments including vulnerability scanning, credential testing, and firmware analysis. The scanner includes an AI-powered assistant to help interpret scan results and provide security recommendations.
+> **College of Engineering — Department of Computer Science and Engineering**
+> **CMPS 485: Computer Security | Spring 2026**
+>
+> | | |
+> |---|---|
+> | **Submission Date** | May 7, 2026 |
+> | **Course Instructor** | Dr. Ahmed Badawy |
+> | **Teaching Assistant** | Engr. Naveed Nawaz |
+> | **Team Members** | Hissa Al-Qahtani (201904081) · Noora Al-Naimi (201106147) · Noora Al-Yafei (202103324) |
 
-## Features
+---
 
-### Core Features
-- Network discovery of IoT devices (basic and advanced modes)
-- Device fingerprinting (vendor, model, firmware version)
-- Vulnerability scanning based on device profiles
-- Default credential checking for common IoT devices
-- Insecure configuration detection
-- Detailed reporting with severity levels
+## Overview
 
-### Advanced Features
-- Web-based dashboard for real-time monitoring and analysis
-- AI Assistant for interactive security guidance and recommendations
-- SNMP scanning and enumeration
-- MAC address vendor identification
-- Network topology mapping and visualization
-- Packet capture and analysis for IoT protocol detection
-- Firmware extraction and vulnerability analysis
-- Exploit testing (for authorized security assessments only)
-- Integration with CVE databases for real-time vulnerability detection
+The IoT Security Scanner is a real-time, agent-free network security tool written in Go that discovers, fingerprints, and assesses the security posture of IoT devices on a local network — all from a single scanning host without installing agents on target devices.
 
-### Next Future Features
-- **Interactive Device Analysis**: Click on any device in the dashboard to open a detailed popup with comprehensive security analysis
-- **Firmware Vulnerability Explorer**: Interactive popup interface for exploring detected firmware vulnerabilities with remediation guidance
-- **Real-time Attack Surface Visualization**: Click-to-expand popup showing potential attack vectors for each device
-- **Compliance Report Generator**: One-click popup to generate compliance reports against various IoT security standards
-- **Threat Intelligence Integration**: Popup alerts when devices match known threat indicators
-- **Remote Remediation Interface**: Interactive popup console for authorized device remediation actions
-- **Custom Rule Builder**: Drag-and-drop popup interface for creating custom scanning rules
+The scanner combines:
 
-## Requirements
+- **Active discovery** — ARP sweep, ICMP echo, TCP SYN scanning
+- **Passive monitoring** — libpcap-based packet capture (ARP, DHCP, DNS)
+- **Device fingerprinting** — MAC OUI resolution, banner grabbing, SNMP enumeration, DHCP/DNS passive analysis
+- **Vulnerability assessment** — default credential testing (2,847 known pairs), SNMP misconfiguration detection, CVE matching via the NIST NVD API
+- **AI-powered assistant** — Claude API integration that converts raw scan findings into plain-language remediation advice
+- **Web dashboard** — real-time device map, vulnerability alerts, and interactive AI assistant
 
-### System Requirements
-- Go 1.21 or later
-- Root/Administrator privileges (for raw socket operations and port scanning)
-- libpcap development libraries (for packet capture features)
+---
 
-### Dependencies for Real Device Scanning
+## Key Results (Evaluated on 14-Device Physical Testbed)
 
-#### Required Packages
-- **libpcap**: Essential for packet capture and network traffic analysis
-  - Ubuntu/Debian: `sudo apt install libpcap-dev`
-  - CentOS/RHEL: `sudo yum install libpcap-devel`
-  - macOS: `brew install libpcap`
+| Metric | Result |
+|---|---|
+| Unauthorized device detection rate | **90%** within 30 seconds |
+| Mean detection latency | **3.2 seconds** |
+| Default credential detection accuracy | **88.9%** |
+| SNMP enumeration coverage | **100%** |
+| False positive rate | **0%** |
+| Full scan duration (17 devices) | **47.3 seconds** |
 
-#### Network Permissions
-- **CAP_NET_RAW capability**: Required for raw socket operations
-  - `sudo setcap cap_net_raw+ep /path/to/iot-scanner`
-- **CAP_NET_ADMIN capability**: Required for network interface operations
-  - `sudo setcap cap_net_admin+ep /path/to/iot-scanner`
-- **Root or sudo access**: Alternatively, running the entire application with elevated privileges
-  - `sudo ./iot-scanner scan`
+---
 
-#### Firewall Configuration
-- Allow outgoing TCP SYN packets for port scanning
-- Allow ICMP echo request/reply for device discovery
-- If using SNMP scanning, allow UDP 161 traffic
+## System Architecture
 
-#### Hardware Requirements
-- Network interface that supports promiscuous mode (for passive scanning)
-- Wireless adapter that supports monitor mode (for wireless IoT device scanning)
+```
+cmd/
+├── main.go              ← Primary CLI entry point (urfave/cli, subcommands)
+├── main/main.go         ← Alternate CLI (flag-based)
+└── scanner/
+    ├── main.go          ← Scanner CLI (flag-based, includes test mode)
+    └── main_advanced.go ← Advanced scanner helpers
 
-### Optional Dependencies
-- MongoDB (for persistent scan results storage)
-- Python 3.8+ with scikit-learn (for enhanced device classification)
-- Nmap 7.0+ (for advanced port scanning capabilities)
-- WireShark/TShark (for detailed protocol analysis)
+pkg/
+├── discovery/           ← ARP sweep, ICMP, TCP SYN, passive ARP listener
+├── fingerprint/         ← MAC OUI, banner grabbing, SNMP, DHCP/DNS
+├── credentials/         ← Default credential testing (SSH, Telnet, HTTP)
+├── vulnerability/       ← CVE matching via NIST NVD API
+├── snmp/                ← SNMP community string enumeration and OID walks
+├── pcap/                ← libpcap packet capture and traffic analysis
+├── firmware/            ← Firmware binary analysis
+├── exploit/             ← Exploit testing module
+├── netmap/              ← Network topology graph generation
+├── api/                 ← Web dashboard, WebSocket streaming, AI assistant
+├── integration/         ← Enhanced scanner orchestration, simulation scanner
+├── models/              ← Shared data structures (Device, Vulnerability, etc.)
+└── config/              ← Configuration loading and defaults
+```
+
+**Default scanned ports:** 21 (FTP), 22 (SSH), 23 (Telnet), 25 (SMTP), 80 (HTTP), 443 (HTTPS), 554 (RTSP), 1883 (MQTT), 5683 (CoAP), 8080 (HTTP-Alt), 8443 (HTTPS-Alt), 8883 (MQTT-TLS), 9000 (UPnP)
+
+---
+
+## Prerequisites
+
+### Required
+
+- **Go 1.21 or later** — [https://go.dev/dl](https://go.dev/dl)
+- **Git**
+
+### Required for real network scanning (raw socket access)
+
+| Platform | Requirement |
+|---|---|
+| Linux / macOS | Run as `root` (`sudo`) — needed for ARP sweep and packet capture |
+| Windows | Run terminal as **Administrator** + install **[Npcap](https://npcap.com/)** (enable WinPcap compatibility mode during install) |
+
+> **No root needed for test/demo mode.** The `-test` flag runs a full simulation with synthetic IoT devices — no network access, no Npcap, no administrator rights required.
+
+### Optional
+
+- **Npcap / libpcap** — required only for passive packet capture (`--pcap` flag)
+
+---
 
 ## Installation
 
-### Installing Dependencies
-
 ```bash
-# Install required system packages (Ubuntu/Debian)
-sudo apt update
-sudo apt install -y build-essential libpcap-dev golang-go
+# 1. Clone the repository
+git clone <repository-url>
+cd IoT-device-Scanner
 
-```
-
-### Installation Steps
-
-```bash
-
-# Install Go dependencies
+# 2. Download Go dependencies
 go mod download
-go mod tidy
 
-# Build the application
-go build -o iot-scanner ./cmd/main.go
-
-# Verify installation
-./iot-scanner --version
+# 3. Verify everything builds
+go build ./...
+go vet ./...
 ```
 
-## Usage
-
-### Basic Commands
+Data directories are created automatically on first run. To create them manually:
 
 ```bash
-# Show help and available commands
-./iot-scanner --help
-
-# Basic scan of local network
-./iot-scanner scan
-
-# Scan specific IP range
-./iot-scanner scan --range 192.168.1.0/24 --threads 20
-
-# Full scan with all security checks
-./iot-scanner scan --range 192.168.1.0/24 --full
-
-# Output results to JSON file
-./iot-scanner scan --range 192.168.1.0/24 --output results.json
+mkdir -p data data/fingerprint data/firmware data/reports data/logs reports
 ```
 
-### Dashboard & AI Assistant
+---
+
+## Quick Start — No Root, No Network Required
+
+The fastest way to explore all features is **simulation mode**, which generates realistic synthetic IoT devices with vulnerabilities, open ports, and fingerprints.
 
 ```bash
-# Start the web dashboard on default port (8080)
-./iot-scanner dashboard
-
-# Start dashboard on specific port
-./iot-scanner dashboard --port 9090
-
-# Start dashboard with persistent storage
-./iot-scanner dashboard --db-path ./data/scanner.db
+go run ./cmd/scanner/ -test -dashboard -port 8080
 ```
 
-Once the dashboard is running, access it at http://localhost:8080
+Open **http://localhost:8080** in your browser to see the full dashboard with device listings, vulnerability alerts, and the AI assistant.
 
-The AI Assistant is available at http://localhost:8080/assistant
+---
 
-### Advanced Features
+## Running the System
+
+The project exposes two CLI styles. Use whichever matches your workflow.
+
+---
+
+### CLI A — Subcommand style (`./cmd/`) — Primary entry point
+
+This is the most feature-complete entry point, using a structured subcommand interface.
+
+#### Scan only
 
 ```bash
-# Generate network topology
-./iot-scanner topology generate --input scan_results.json
+# Basic device discovery
+go run ./cmd/ scan --range 192.168.1.0/24
 
-# Perform SNMP scanning
-./iot-scanner snmp scan --range 192.168.1.0/24 --community public
+# Full scan: fingerprinting + vulnerability checks + credential testing
+go run ./cmd/ scan --range 192.168.1.0/24 --full --output scan_results.json
 
-# Test mode (simulated devices, no actual network scanning)
-./iot-scanner scan --simulation
-
-# Analyze firmware (if available)
-./iot-scanner firmware analyze --file firmware.bin
-
-# Run exploit tests (use responsibly)
-./iot-scanner exploit test --target 192.168.1.100 --port 23
+# Enhanced scan: adds SNMP enumeration + MAC OUI lookup + topology map
+go run ./cmd/ scan --range 192.168.1.0/24 --full --enhanced --output scan_results.json
 ```
 
-## Running in Test Mode
-
-The scanner includes a test mode to simulate network scanning and device discovery without requiring actual network access or privileges. This is useful for testing and development purposes.
+On Linux/macOS, prefix with `sudo`:
 
 ```bash
-# Run scanner in test mode with simulated devices
-./iot-scanner scan --simulation
-
-# Run dashboard with simulated data
-./iot-scanner dashboard --simulation
+sudo go run ./cmd/ scan --range 192.168.1.0/24 --full --enhanced --output scan_results.json
 ```
 
-## Scanning Real Devices
-
-To scan actual IoT devices on your network, the scanner must be run with appropriate permissions. Here are the detailed commands for real-world scanning:
-
-### Basic Network Scan
+#### Dashboard only (loads previously saved results)
 
 ```bash
-# Basic scan (requires root privileges)
-sudo ./iot-scanner scan --range 192.168.1.0/24
-
-# Specify scan threads for faster performance
-sudo ./iot-scanner scan --range 192.168.1.0/24 --threads 20
-
-# Scan specific IP address
-sudo ./iot-scanner scan --range 192.168.1.100/32
+go run ./cmd/ dashboard --port 8080 --results scan_results.json
 ```
 
-### Advanced Scanning
+Open **http://localhost:8080**.
+
+#### Full workflow: scan then view in dashboard
 
 ```bash
-# Full scan with vulnerability checks (takes longer)
-sudo ./iot-scanner scan --range 192.168.1.0/24 --full
+# Terminal 1 — run the scan (saves to scan_results.json)
+sudo go run ./cmd/ scan --range 192.168.1.0/24 --full --enhanced --output scan_results.json
 
-# Enhanced scan with SNMP, device fingerprinting
-sudo ./iot-scanner scan --range 192.168.1.0/24 --enhanced --snmp
-
-# Specifying additional scan options
-sudo ./iot-scanner scan --range 192.168.1.0/24 --timeout 10s --output scan_results.json
+# Terminal 2 — start the dashboard at any time
+go run ./cmd/ dashboard --port 8080 --results scan_results.json
 ```
 
-### Using Without Root (with capabilities)
+#### All subcommands
 
-If you prefer not to run the entire application as root, you can use Linux capabilities:
+| Command | Description |
+|---|---|
+| `scan --range <CIDR>` | Set target network (default: `192.168.1.0/24`) |
+| `scan --full` | Enable vulnerability + credential scanning |
+| `scan --enhanced` | Add SNMP enumeration, MAC OUI lookup, topology |
+| `scan --threads <n>` | Concurrent threads (default: `10`) |
+| `scan --timeout <duration>` | Network timeout (default: `5s`) |
+| `scan --output <file>` | Save results to JSON file |
+| `dashboard --port <port>` | Dashboard port (default: `8080`) |
+| `dashboard --results <file>` | Pre-load scan results into dashboard |
+| `topology generate --input <file>` | Generate topology map from scan results |
+| `snmp scan --range <CIDR>` | Dedicated SNMP scan |
+| `firmware analyze --file <path>` | Analyze a firmware binary |
+| `exploit test --target <IP>` | Test known exploits against a specific device |
+
+Global flags (placed before the subcommand):
+
+| Flag | Description |
+|---|---|
+| `--verbose` | Enable debug-level logging |
+| `--log-level debug\|info\|warn\|error` | Set log verbosity |
+| `--config <file>` | Load all settings from a JSON config file |
+
+---
+
+### CLI B — Flag style (`./cmd/scanner/`) — Includes test/demo mode
 
 ```bash
-# Set required capabilities
-sudo setcap cap_net_raw,cap_net_admin+ep ./iot-scanner
+# Simulation — no root, no network, full dashboard (best for demo/testing)
+go run ./cmd/scanner/ -test -dashboard -port 8080
 
-# Now you can run without sudo
-./iot-scanner scan --range 192.168.1.0/24
+# Real scan with dashboard
+sudo go run ./cmd/scanner/ -range 192.168.1.0/24 -full -dashboard -port 8080
+
+# Full scan with live CVE feed, exploit alerts, and HTML report export
+sudo go run ./cmd/scanner/ \
+  -range 192.168.1.0/24 \
+  -full \
+  -dashboard -port 8080 \
+  -live-cve -cve-interval 30 \
+  -exploit-notify \
+  -export -format html -export-dir reports
 ```
 
-### Scanning from the Web Dashboard
+| Flag | Default | Description |
+|---|---|---|
+| `-range` | `192.168.1.0/24` | CIDR network to scan |
+| `-threads` | `10` | Concurrent scanning threads |
+| `-timeout` | `5` | Network operation timeout (seconds) |
+| `-full` | false | Full scan: vuln checks + credential testing |
+| `-test` | false | Simulation mode — no network or root needed |
+| `-dashboard` | false | Launch web dashboard |
+| `-port` | `8080` | Dashboard port |
+| `-output` | `results.json` | JSON output file |
+| `-verbose` | false | Debug logging |
+| `-live-cve` | false | Poll NIST NVD API for new CVEs |
+| `-cve-interval` | `60` | CVE poll interval in minutes |
+| `-exploit-notify` | false | Alert on newly discovered exploits |
+| `-export` | false | Export a report file |
+| `-format` | `json` | Export format: `json`, `csv`, `md`, `html` |
+| `-export-dir` | `reports` | Directory for exported reports |
 
-1. Start the dashboard: `./iot-scanner dashboard`
-2. Access in browser: http://localhost:8080
-3. Click the "Start Scan" button in the top right
-4. Enter the IP range and options in the modal dialog
-5. Click "Start Scan" to begin the network scan
+---
 
-> **Note:** If running the dashboard without root privileges, you may need to provide the password when prompted, or configure sudo to allow the scan command without a password.
+### CLI C — Integrated scanner (`./`) — Root-level all-in-one
 
-## Troubleshooting Scan Issues
+```bash
+# Simulation with dashboard
+go run . -test -dashboard
 
-### Common Problems
+# Full scan with every feature enabled
+sudo go run . \
+  -range 192.168.1.0/24 \
+  -full \
+  -dashboard -port 8080 \
+  -live-cve -exploit-notify \
+  -export -format html
+```
 
-1. **Permission Denied Errors**
-   - Solution: Run with sudo or set correct capabilities
-   - Command: `sudo setcap cap_net_raw,cap_net_admin+ep ./iot-scanner`
+---
 
-2. **No Devices Found**
-   - Check if you're on the same network as your IoT devices
-   - Try a smaller IP range or specific IP addresses
-   - Verify devices are powered on and connected
+## Passive Packet Capture (Linux/macOS)
 
-3. **Scan Button Not Working**
-   - Ensure you have the latest version of the application
-   - Check browser console for JavaScript errors
-   - Make sure the backend API server is running
+Enables continuous background monitoring without active probing after the initial sweep.
 
-4. **Slow Scanning**
-   - Increase thread count: `--threads 30`
-   - Reduce timeout: `--timeout 3s`
-   - Limit scan to smaller IP ranges
+```bash
+# Find your interface
+ip link show        # Linux
+ifconfig            # macOS
 
+# Launch with passive capture
+sudo go run ./cmd/scanner/ \
+  -range 192.168.1.0/24 \
+  -full -dashboard \
+  -pcap eth0        # replace with your interface name
+```
 
+---
 
-## Disclaimer
+## Scanning Modes at a Glance
 
-This tool is designed for security professionals and researchers to audit their own networks. Always obtain proper authorization before scanning any network. The authors are not responsible for any misuse or damage caused by this program.
+| Mode | Command | Root Needed | Network Needed | What It Does |
+|---|---|---|---|---|
+| **Simulation** | `-test -dashboard` | No | No | Full UI with synthetic devices |
+| **Basic** | `scan --range ...` | Yes | Yes | ARP discovery + port scan |
+| **Full** | `scan --range ... --full` | Yes | Yes | + Credential testing + CVE matching |
+| **Enhanced** | `scan --range ... --full --enhanced` | Yes | Yes | + SNMP enum + MAC OUI + topology |
+| **Passive** | `-pcap <iface>` | Yes | Yes | Continuous background ARP monitoring |
 
+---
+
+## Configuration File
+
+Load all settings from `config.json` using `--config config.json`:
+
+```json
+{
+  "IPRange":         "192.168.1.0/24",
+  "FullScan":        true,
+  "EnhancedScan":    true,
+  "Threads":         10,
+  "Timeout":         "5s",
+  "OutputFile":      "scan_results.json",
+  "OutputFormat":    "json",
+  "EnableDashboard": true,
+  "DashboardPort":   "8080",
+  "EnableExport":    true,
+  "ExportDirectory": "reports",
+  "DatabasePath":    "data",
+  "FingerPrintDB":   "data/fingerprints.json"
+}
+```
+
+---
+
+## Report Export
+
+The scanner can export findings in four formats (flag: `-format`, `-export-dir`):
+
+| Format | Flag value | Contents |
+|---|---|---|
+| JSON | `json` | Full machine-readable device and vulnerability data |
+| CSV | `csv` | Spreadsheet-compatible device listing |
+| Markdown | `md` | Documentation-ready tables |
+| HTML | `html` | Self-contained browser report with styled tables |
+
+Reports are saved to `reports/iot_scan_<YYYYMMDD-HHMMSS>.<ext>`.
+
+---
+
+## Web Dashboard
+
+Accessible at **http://localhost:8080** when `-dashboard` or `--dashboard` is set:
+
+- **Device table** — IP, MAC, vendor, model, OS, firmware version, open ports, CVEs
+- **Real-time alerts** — WebSocket-streamed notifications for newly detected devices and HIGH/CRITICAL findings
+- **Network topology** — D3.js interactive graph of device relationships
+- **Vulnerability summary** — CVE list with CVSS scores and NIST NVD links
+- **AI Security Assistant** — Chat interface at `/assistant`; generates prioritized, plain-language remediation checklists from scan findings, aligned with NIST SP 800-213 and the OWASP IoT Top 10
+- **Export** — Download results as JSON or HTML directly from the browser
+
+---
+
+## Project File Structure
+
+```
+IoT-device-Scanner/
+├── cmd/
+│   ├── main.go                  # Primary CLI (subcommand-based, urfave/cli)
+│   ├── main/main.go             # Alternate CLI (flag-based)
+│   └── scanner/
+│       ├── main.go              # Scanner CLI (flag-based, test mode)
+│       └── main_advanced.go     # Advanced scanner helpers
+├── integrated_scanner.go        # Root-level scanner with CVE feed + export
+├── pkg/
+│   ├── api/
+│   │   ├── assistant.go         # AI assistant chat endpoint
+│   │   ├── dashboard.go         # Web dashboard and WebSocket server
+│   │   └── server.go            # HTTP server setup
+│   ├── config/config.go         # Config struct and defaults
+│   ├── credentials/             # Default credential database and tester
+│   ├── discovery/
+│   │   ├── discovery.go         # ARP sweep, ICMP, TCP SYN scanner
+│   │   ├── advanced_discovery.go
+│   │   └── scanner_interface.go
+│   ├── exploit/exploit.go       # CVE exploit testing
+│   ├── fingerprint/
+│   │   ├── fingerprint.go       # Banner grabbing, SNMP, DHCP fingerprinting
+│   │   └── mac_vendor.go        # OUI-to-manufacturer database
+│   ├── firmware/analyzer.go     # Firmware binary analysis
+│   ├── integration/
+│   │   ├── enhanced_scanner.go  # SNMP + MAC + topology orchestration
+│   │   └── test_scanner.go      # Simulation/demo scanner
+│   ├── models/
+│   │   ├── device.go            # Device, Vulnerability, Credential types
+│   │   └── device_methods.go
+│   ├── netmap/topology.go       # Network topology graph
+│   ├── pcap/packet_analyzer.go  # libpcap passive packet capture
+│   ├── snmp/scanner.go          # SNMP community string testing and OID walk
+│   └── vulnerability/           # NIST NVD CVE lookup and CVSS scoring
+├── data/                        # Runtime data (OUI DB, fingerprints, CVE cache)
+├── reports/                     # Exported scan reports
+├── go.mod
+└── go.sum
+```
+
+---
+
+## Dependencies
+
+| Package | Purpose |
+|---|---|
+| `github.com/google/gopacket` | Packet capture via libpcap |
+| `github.com/gin-gonic/gin` | Web dashboard HTTP server |
+| `github.com/urfave/cli/v2` | Subcommand CLI framework |
+| `github.com/sirupsen/logrus` | Structured logging |
+| `github.com/fatih/color` | Terminal color output |
+
+Full list in `go.mod`.
+
+---
+
+## Limitations
+
+- **MAC address randomization** — iOS 14+, Android 10+, and Windows 10 v1903+ use per-network randomized MACs, causing re-connecting devices to appear as new unknowns. Mitigation requires multi-dimensional identification (DHCP fingerprinting, TLS JA3, behavioral profiling).
+- **Encrypted traffic** — Passive fingerprinting is limited to unencrypted protocols; increasing TLS adoption by IoT vendors reduces traffic-analysis utility.
+- **Single subnet scope** — ARP-based discovery is bounded by a single Layer-2 broadcast domain. Multi-VLAN environments require one scanner instance per segment.
+- **Windows constraints** — Full ARP sweep and packet capture on Windows require Npcap and an Administrator terminal. Features degrade gracefully without it.
+- **Legal notice** — Active scanning and credential testing are **only lawful on networks for which you hold explicit authorization**. Unauthorized use may violate applicable computer fraud legislation (e.g., Qatar Cybercrime Law). All evaluation reported in the accompanying paper was conducted on an isolated dedicated testbed.
+
+---
+
+## Academic Context
+
+This tool was designed, implemented, and evaluated as the course project for **CMPS 485: Computer Security**, College of Engineering, Department of Computer Science and Engineering, Spring 2026.
+
+The accompanying paper documents:
+- A five-scenario evaluation on a controlled 14-device physical IoT testbed
+- Comparative analysis against arpwatch v2.1 as a passive-ARP baseline
+- Per-phase scan timing benchmarks
+- Discussion of MAC randomization, encrypted traffic scope, and generalizability limitations
+- Future directions including ML-based anomaly detection, distributed multi-segment deployment, and automated CVE database synchronization
+
+**Selected references:** Miettinen et al. (2017) IoT Sentinel; Sivanathan et al. (2018) IoT device classification; Meidan et al. (2018) N-BaIoT; NIST SP 800-213; OWASP IoT Top 10 (2023).
