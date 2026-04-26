@@ -152,7 +152,7 @@ func (s *Scanner) scanPorts(device *Device) {
 
 // isPortOpen checks if a port is open
 func (s *Scanner) isPortOpen(ip string, port int) bool {
-	addr := fmt.Sprintf("%s:%d", ip, port)
+	addr := net.JoinHostPort(ip, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", addr, s.config.Timeout)
 	if err != nil {
 		return false
@@ -163,7 +163,7 @@ func (s *Scanner) isPortOpen(ip string, port int) bool {
 
 // getBanner attempts to get a service banner from an open port
 func (s *Scanner) getBanner(ip string, port int) string {
-	addr := fmt.Sprintf("%s:%d", ip, port)
+	addr := net.JoinHostPort(ip, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", addr, s.config.Timeout)
 	if err != nil {
 		return ""

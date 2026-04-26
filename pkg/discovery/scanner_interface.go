@@ -308,7 +308,7 @@ func saveAsMarkdown(devices []Device, writer io.Writer) error {
 		}
 		
 		// Add separator between devices
-		_, err = fmt.Fprintln(writer, "\n---\n")
+		_, err = fmt.Fprint(writer, "\n---\n")
 		if err != nil {
 			return err
 		}

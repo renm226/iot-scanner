@@ -345,13 +345,11 @@ func exportMarkdown(report ScanReport, filename string) error {
 	// Write each device
 	for _, device := range report.Devices {
 		// Format open ports
-		portList := ""
-		for i, port := range device.OpenPorts {
-			if i > 0 {
-				portList += ", "
-			}
-			portList += fmt.Sprintf("%s", port)
+		var portParts []string
+		for portNum, service := range device.OpenPorts {
+			portParts = append(portParts, fmt.Sprintf("%d (%s)", portNum, service))
 		}
+		portList := strings.Join(portParts, ", ")
 
 		// Format vulnerabilities
 		vulnList := ""
@@ -438,13 +436,11 @@ func exportHTML(report ScanReport, filename string) error {
 	// Add each device
 	for _, device := range report.Devices {
 		// Format open ports
-		portList := ""
-		for i, port := range device.OpenPorts {
-			if i > 0 {
-				portList += ", "
-			}
-			portList += fmt.Sprintf("%s", port)
+		var portParts []string
+		for portNum, service := range device.OpenPorts {
+			portParts = append(portParts, fmt.Sprintf("%d (%s)", portNum, service))
 		}
+		portList := strings.Join(portParts, ", ")
 
 		// Format vulnerabilities
 		vulnList := ""
@@ -783,37 +779,38 @@ func countDeviceTypes(devices []models.Device) DeviceTypeCount {
 	counts := DeviceTypeCount{}
 
 	for i := range devices {
-		// Check device type from tags (if already processed)
-		deviceType := DeviceTypeUnknown
+		tagFound := false
 		for _, tag := range devices[i].Tags {
 			switch tag {
 			case "ip_camera":
 				counts.IPCameras++
-				continue
+				tagFound = true
 			case "wifi_device":
 				counts.WiFiDevices++
-				continue
+				tagFound = true
 			case "bluetooth_device":
 				counts.Bluetooth++
-				continue
+				tagFound = true
 			case "router":
 				counts.Routers++
-				continue
+				tagFound = true
 			case "smart_home":
 				counts.SmartHome++
-				continue
+				tagFound = true
 			case "smart_tv":
 				counts.SmartTV++
-				continue
+				tagFound = true
 			case "voice_assistant":
 				counts.VoiceAssistant++
-				continue
+				tagFound = true
+			}
+			if tagFound {
+				break
 			}
 		}
 
-		// If no tag found, detect the device type
-		if deviceType == DeviceTypeUnknown {
-			deviceType = detectDeviceType(&devices[i])
+		if !tagFound {
+			deviceType := detectDeviceType(&devices[i])
 			switch deviceType {
 			case DeviceTypeIPCamera:
 				counts.IPCameras++

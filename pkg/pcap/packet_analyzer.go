@@ -133,8 +133,8 @@ func (p *PacketAnalyzer) Stop() {
 }
 
 // GetDevices returns a copy of the current device traffic data
-func (p *PacketAnalyzer) GetDevices() map[string]DeviceTraffic {
-	result := make(map[string]DeviceTraffic)
+func (p *PacketAnalyzer) GetDevices() map[string]*DeviceTraffic {
+	result := make(map[string]*DeviceTraffic)
 	
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -176,7 +176,7 @@ func (p *PacketAnalyzer) GetDevices() map[string]DeviceTraffic {
 		}
 		
 		device.mu.Unlock()
-		result[ip] = deviceCopy
+		result[ip] = &deviceCopy
 	}
 	
 	return result
