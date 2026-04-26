@@ -1,9 +1,10 @@
 package main
 
 import (
+	"iot-scanner/pkg/api"
+	"iot-scanner/pkg/models"
+
 	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/models"
 	"github.com/sirupsen/logrus"
 )
 
@@ -37,7 +38,7 @@ func LaunchDashboard() {
 	// Start the dashboard
 	color.Green("Web dashboard is running at: http://localhost:8080")
 	color.Green("Press Ctrl+C to stop the server")
-	
+
 	// Start the dashboard server
 	err := dashboard.Start()
 	if err != nil {
@@ -143,13 +144,13 @@ func getSampleDevices() []models.Device {
 			OperatingSystem: "Tizen OS 5.0",
 			FirmwareVersion: "1.8.2",
 			OpenPorts: map[int]string{
-				80:  "HTTP",
-				443: "HTTPS",
+				80:   "HTTP",
+				443:  "HTTPS",
 				8080: "HTTP Alternate",
 			},
 			Services: map[string]string{
-				"HTTP":         "Web Interface",
-				"HTTPS":        "API",
+				"HTTP":           "Web Interface",
+				"HTTPS":          "API",
 				"HTTP Alternate": "Media Streaming",
 			},
 			Tags: []string{"tv", "iot", "media"},
@@ -168,8 +169,8 @@ func getSampleDevices() []models.Device {
 				8009: "Cast Protocol",
 			},
 			Services: map[string]string{
-				"HTTP":         "Web Interface",
-				"HTTPS":        "API",
+				"HTTP":          "Web Interface",
+				"HTTPS":         "API",
 				"Cast Protocol": "Media Streaming",
 			},
 			Tags: []string{"speaker", "iot", "audio"},

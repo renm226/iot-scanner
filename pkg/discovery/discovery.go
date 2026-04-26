@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ExclusiveAccount/iot-scanner/pkg/config"
-	"github.com/ExclusiveAccount/iot-scanner/pkg/models"
+	"iot-scanner
+	"iot-scanner
 )
 
 // Device is an alias for models.Device

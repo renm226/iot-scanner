@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/integration"
+	"iot-scanner
+	"iot-scanner/pkg/integration"
 	"github.com/sirupsen/logrus"
 )
 

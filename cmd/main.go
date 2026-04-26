@@ -11,11 +11,11 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/discovery"
-	"github.com/renm226/iot-scanner/pkg/integration"
-	"github.com/renm226/iot-scanner/pkg/models"
+	"iot-scanner/pkg/api"
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/integration"
+	"iot-scanner/pkg/models"
 )
 
 const (

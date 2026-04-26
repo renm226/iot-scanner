@@ -6,32 +6,33 @@ import (
 	"sync"
 	"time"
 
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/models"
+
 	"github.com/gin-gonic/gin"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/models"
 	"github.com/sirupsen/logrus"
 )
 
 // DashboardServer represents a web dashboard for displaying scan results
 type DashboardServer struct {
-	config        config.Config
-	router        *gin.Engine
-	scanResults   []models.Device
+	config          config.Config
+	router          *gin.Engine
+	scanResults     []models.Device
 	vulnerabilities map[string]models.Vulnerability
-	scanHistory   []DashboardScanResult
-	logger        *logrus.Logger
-	mutex         sync.RWMutex
-	assistant     *Assistant
+	scanHistory     []DashboardScanResult
+	logger          *logrus.Logger
+	mutex           sync.RWMutex
+	assistant       *Assistant
 }
 
 // DashboardScanResult represents the result of a scan for dashboard display
 type DashboardScanResult struct {
-	Timestamp time.Time
-	DeviceCount int
+	Timestamp          time.Time
+	DeviceCount        int
 	VulnerabilityCount int
-	CredentialCount int
-	NetworkRange string
-	IPAddresses []string
+	CredentialCount    int
+	NetworkRange       string
+	IPAddresses        []string
 }
 
 // NewDashboardServer creates a new dashboard server
@@ -42,12 +43,12 @@ func NewDashboardServer(cfg config.Config) *DashboardServer {
 
 	// Create dashboard server
 	server := &DashboardServer{
-		config:      cfg,
-		router:      router,
-		scanResults: []models.Device{},
+		config:          cfg,
+		router:          router,
+		scanResults:     []models.Device{},
 		vulnerabilities: make(map[string]models.Vulnerability),
-		scanHistory: []DashboardScanResult{},
-		logger:      logrus.New(),
+		scanHistory:     []DashboardScanResult{},
+		logger:          logrus.New(),
 	}
 
 	// Configure logger
@@ -72,7 +73,7 @@ func NewDashboardServer(cfg config.Config) *DashboardServer {
 	router.GET("/api/scan-results", server.handleGetScanResults)
 	router.GET("/api/scan-history", server.handleGetScanHistory)
 	router.GET("/api/stats", server.handleGetStats)
-	
+
 	// Register assistant routes
 	server.assistant.RegisterRoutes(router)
 
@@ -118,12 +119,12 @@ func (s *DashboardServer) AddScanResult(devices []models.Device) {
 
 	// Add scan history
 	s.scanHistory = append(s.scanHistory, DashboardScanResult{
-		Timestamp:         currentTime,
-		DeviceCount:       len(devices),
+		Timestamp:          currentTime,
+		DeviceCount:        len(devices),
 		VulnerabilityCount: vulnCount,
-		CredentialCount:   credCount,
-		NetworkRange:      s.config.IPRange,
-		IPAddresses:       ipAddresses,
+		CredentialCount:    credCount,
+		NetworkRange:       s.config.IPRange,
+		IPAddresses:        ipAddresses,
 	})
 
 	// Update assistant with scan stats
@@ -131,7 +132,7 @@ func (s *DashboardServer) AddScanResult(devices []models.Device) {
 		s.assistant.UpdateScanStats(len(devices), vulnCount, s.config.IPRange, timeStr)
 	}
 
-	s.logger.Infof("Added scan result with %d devices, %d vulnerabilities, %d credentials", 
+	s.logger.Infof("Added scan result with %d devices, %d vulnerabilities, %d credentials",
 		len(devices), vulnCount, credCount)
 }
 
@@ -190,7 +191,7 @@ func (s *DashboardServer) handleVulnerabilities(c *gin.Context) {
 	defer s.mutex.RUnlock()
 
 	c.HTML(http.StatusOK, "vulnerabilities.html", gin.H{
-		"title":          "Vulnerabilities",
+		"title":           "Vulnerabilities",
 		"vulnerabilities": s.vulnerabilities,
 	})
 }
@@ -220,8 +221,8 @@ func (s *DashboardServer) handleGetStats(c *gin.Context) {
 	for _, device := range s.scanResults {
 		deviceType := "unknown"
 		for _, tag := range device.Tags {
-			if tag == "camera" || tag == "router" || tag == "wifi" || 
-			   tag == "bluetooth" || tag == "smart_home" || tag == "voice_assistant" {
+			if tag == "camera" || tag == "router" || tag == "wifi" ||
+				tag == "bluetooth" || tag == "smart_home" || tag == "voice_assistant" {
 				deviceType = tag
 				break
 			}
@@ -237,9 +238,9 @@ func (s *DashboardServer) handleGetStats(c *gin.Context) {
 
 	// Prepare statistics
 	stats := gin.H{
-		"deviceCount":       len(s.scanResults),
-		"deviceTypes":       deviceTypes,
-		"vulnerabilityCount": len(s.vulnerabilities),
+		"deviceCount":               len(s.scanResults),
+		"deviceTypes":               deviceTypes,
+		"vulnerabilityCount":        len(s.vulnerabilities),
 		"vulnerabilitiesBySeverity": vulnSeverity,
 	}
 

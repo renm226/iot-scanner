@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/renm226/iot-scanner/pkg/models"
+	"iot-scanner
 	"net/http"
 	"sync"
 	"time"
@@ -12,9 +12,9 @@ import (
 
 // ScanResult represents the results of a scan
 type ScanResult struct {
-	Timestamp time.Time           `json:"timestamp"`
-	Devices   []models.Device  `json:"devices"`
-	Stats     ScanStats           `json:"stats"`
+	Timestamp time.Time       `json:"timestamp"`
+	Devices   []models.Device `json:"devices"`
+	Stats     ScanStats       `json:"stats"`
 }
 
 // ScanStats contains statistics about a scan
@@ -62,7 +62,7 @@ func NewDashboard(config DashboardConfig, logger *logrus.Logger) *Dashboard {
 	}
 
 	router := gin.Default()
-	
+
 	// Set release mode in production
 	gin.SetMode(gin.ReleaseMode)
 
@@ -106,7 +106,7 @@ func (d *Dashboard) setupRoutes() {
 	// HTML routes
 	d.router.GET("/", d.handleIndex)
 	d.router.GET("/dashboard", d.handleDashboard)
-	
+
 	// API routes
 	api := d.router.Group("/api")
 	{
@@ -115,19 +115,19 @@ func (d *Dashboard) setupRoutes() {
 		api.GET("/vulnerabilities", d.handleGetVulnerabilities)
 		api.GET("/stats", d.handleGetStats)
 		api.GET("/history", d.handleGetHistory)
-		
+
 		// Scan control
 		api.POST("/scan/start", d.handleStartScan)
 		api.POST("/scan/stop", d.handleStopScan)
 		api.GET("/scan/status", d.handleScanStatus)
-		
+
 		// Export
 		if d.config.AllowExports {
 			api.GET("/export/json", d.handleExportJSON)
 			api.GET("/export/csv", d.handleExportCSV)
 			api.GET("/export/report", d.handleExportReport)
 		}
-		
+
 		// Remediation
 		if d.config.EnableRemediate {
 			api.POST("/remediate/:ip", d.handleRemediate)
@@ -159,12 +159,12 @@ func (d *Dashboard) AddScanResult(devices []models.Device) {
 		if device.Vendor != "" || device.Model != "" {
 			stats.IdentifiedDevices++
 		}
-		
+
 		if len(device.Vulnerabilities) > 0 {
 			stats.VulnerableDevices++
 			stats.TotalVulnerabilities += len(device.Vulnerabilities)
 		}
-		
+
 		if len(device.DefaultCredentials) > 0 {
 			stats.DefaultCredsDevices++
 			stats.TotalDefaultCreds += len(device.DefaultCredentials)
@@ -180,7 +180,7 @@ func (d *Dashboard) AddScanResult(devices []models.Device) {
 
 	// Add to results history
 	d.results = append(d.results, result)
-	
+
 	// Trim history if needed
 	if len(d.results) > d.config.ResultsHistory {
 		d.results = d.results[len(d.results)-d.config.ResultsHistory:]
@@ -230,7 +230,7 @@ func (d *Dashboard) handleGetDevices(c *gin.Context) {
 
 func (d *Dashboard) handleGetDevice(c *gin.Context) {
 	ip := c.Param("ip")
-	
+
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 
@@ -240,7 +240,7 @@ func (d *Dashboard) handleGetDevice(c *gin.Context) {
 	}
 
 	latest := d.results[len(d.results)-1]
-	
+
 	for _, device := range latest.Devices {
 		if device.IP == ip {
 			c.JSON(http.StatusOK, device)
@@ -261,9 +261,9 @@ func (d *Dashboard) handleGetVulnerabilities(c *gin.Context) {
 	}
 
 	latest := d.results[len(d.results)-1]
-	
+
 	var allVulns []struct {
-		DeviceIP string `json:"device_ip"`
+		DeviceIP   string `json:"device_ip"`
 		DeviceInfo string `json:"device_info"`
 		models.Vulnerability
 	}
@@ -273,15 +273,15 @@ func (d *Dashboard) handleGetVulnerabilities(c *gin.Context) {
 		if device.Vendor != "" || device.Model != "" {
 			deviceInfo = device.Vendor + " " + device.Model + " (" + device.IP + ")"
 		}
-		
+
 		for _, vuln := range device.Vulnerabilities {
 			allVulns = append(allVulns, struct {
-				DeviceIP string `json:"device_ip"`
+				DeviceIP   string `json:"device_ip"`
 				DeviceInfo string `json:"device_info"`
 				models.Vulnerability
 			}{
-				DeviceIP: device.IP,
-				DeviceInfo: deviceInfo,
+				DeviceIP:      device.IP,
+				DeviceInfo:    deviceInfo,
 				Vulnerability: vuln,
 			})
 		}
@@ -346,7 +346,7 @@ func (d *Dashboard) handleExportJSON(c *gin.Context) {
 	}
 
 	latest := d.results[len(d.results)-1]
-	
+
 	// Set headers for file download
 	c.Header("Content-Disposition", "attachment; filename=iot_scan_results.json")
 	c.JSON(http.StatusOK, latest)
@@ -364,12 +364,12 @@ func (d *Dashboard) handleExportReport(c *gin.Context) {
 
 func (d *Dashboard) handleRemediate(c *gin.Context) {
 	ip := c.Param("ip")
-	
+
 	// Implementation for device remediation would go here
 	// This could include changing passwords, applying patches, etc.
-	
+
 	c.JSON(http.StatusOK, gin.H{
-		"status": "success",
+		"status":  "success",
 		"message": "Remediation tasks scheduled for " + ip,
 	})
 }

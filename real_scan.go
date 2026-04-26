@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/api"
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/discovery"
 	"github.com/sirupsen/logrus"
 )
 

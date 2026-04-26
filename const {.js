@@ -870,7 +870,7 @@ const doc = new Document({
           "sudo apt update && sudo apt install -y build-essential libpcap-dev golang-go",
           "",
           "# Clone the repository",
-          "git clone https://github.com/ExclusiveAccount/iot-scanner.git",
+          "git clone https://iot-scanner.git",
           "cd iot-scanner",
           "",
           "# Download Go module dependencies",
@@ -988,7 +988,7 @@ const doc = new Document({
         ),
         caption("Table B.1. Mapping of report sections to grading rubric criteria."),
         blank(),
-        body("All project files, including source code, configuration, and this report, are available in the project repository at: https://github.com/ExclusiveAccount/iot-scanner"),
+        body("All project files, including source code, configuration, and this report, are available in the project repository at: https://iot-scanner
       ]
     }
   ]

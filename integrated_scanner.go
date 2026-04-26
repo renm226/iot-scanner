@@ -12,12 +12,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/discovery"
-	"github.com/renm226/iot-scanner/pkg/fingerprint"
-	"github.com/renm226/iot-scanner/pkg/models"
+	"iot-scanner/pkg/api"
+ioiot-scanner
+	"iot-scanner
+	"iot-scanner/pkg/config"
+	"iot-scanner
+	"iot-scanner
+	"iot-scanner
 	"github.com/sirupsen/logrus"
 )
 
@@ -45,24 +46,24 @@ type Exploit struct {
 
 // Notification represents a security notification for users
 type Notification struct {
-	Timestamp    time.Time `json:"timestamp"`
-	Level        string    `json:"level"` // info, warning, critical
-	Title        string    `json:"title"`
-	Message      string    `json:"message"`
-	RelatedCVE   string    `json:"related_cve,omitempty"`
-	AffectedIPs  []string  `json:"affected_ips,omitempty"`
-	Remediation  string    `json:"remediation,omitempty"`
+	Timestamp   time.Time `json:"timestamp"`
+	Level       string    `json:"level"` // info, warning, critical
+	Title       string    `json:"title"`
+	Message     string    `json:"message"`
+	RelatedCVE  string    `json:"related_cve,omitempty"`
+	AffectedIPs []string  `json:"affected_ips,omitempty"`
+	Remediation string    `json:"remediation,omitempty"`
 }
 
 // ReportFormat defines the format for exported reports
 type ReportFormat string
 
 const (
-	ReportFormatJSON    ReportFormat = "json"
-	ReportFormatCSV     ReportFormat = "csv"
+	ReportFormatJSON     ReportFormat = "json"
+	ReportFormatCSV      ReportFormat = "csv"
 	ReportFormatMarkdown ReportFormat = "md"
-	ReportFormatHTML    ReportFormat = "html"
-	ReportFormatPDF     ReportFormat = "pdf" // Requires additional dependencies
+	ReportFormatHTML     ReportFormat = "html"
+	ReportFormatPDF      ReportFormat = "pdf" // Requires additional dependencies
 )
 
 // ScanReport represents a complete scan report for export
@@ -79,28 +80,28 @@ type DeviceTypeCount struct {
 }
 
 type ScanReport struct {
-	Timestamp       time.Time          `json:"timestamp"`
-	NetworkRange    string             `json:"network_range"`
-	TotalDevices    int                `json:"total_devices"`
-	VulnerableCount int                `json:"vulnerable_count"`
-	Devices         []models.Device    `json:"devices"`
-	Notifications   []Notification     `json:"notifications,omitempty"`
-	CVECount        int                `json:"cve_count"`
-	ScanDuration    time.Duration      `json:"scan_duration"`
-	DeviceTypes     DeviceTypeCount    `json:"device_types"`
+	Timestamp       time.Time       `json:"timestamp"`
+	NetworkRange    string          `json:"network_range"`
+	TotalDevices    int             `json:"total_devices"`
+	VulnerableCount int             `json:"vulnerable_count"`
+	Devices         []models.Device `json:"devices"`
+	Notifications   []Notification  `json:"notifications,omitempty"`
+	CVECount        int             `json:"cve_count"`
+	ScanDuration    time.Duration   `json:"scan_duration"`
+	DeviceTypes     DeviceTypeCount `json:"device_types"`
 }
 
 // DeviceType represents the type of IoT device
 type DeviceType string
 
 const (
-	DeviceTypeUnknown    DeviceType = "unknown"
-	DeviceTypeIPCamera   DeviceType = "ip_camera"
-	DeviceTypeWiFi       DeviceType = "wifi_device"
-	DeviceTypeBluetooth  DeviceType = "bluetooth_device"
-	DeviceTypeRouter     DeviceType = "router"
-	DeviceTypeSmartHome  DeviceType = "smart_home"
-	DeviceTypeSmartTV    DeviceType = "smart_tv"
+	DeviceTypeUnknown        DeviceType = "unknown"
+	DeviceTypeIPCamera       DeviceType = "ip_camera"
+	DeviceTypeWiFi           DeviceType = "wifi_device"
+	DeviceTypeBluetooth      DeviceType = "bluetooth_device"
+	DeviceTypeRouter         DeviceType = "router"
+	DeviceTypeSmartHome      DeviceType = "smart_home"
+	DeviceTypeSmartTV        DeviceType = "smart_tv"
 	DeviceTypeVoiceAssistant DeviceType = "voice_assistant"
 )
 
@@ -113,33 +114,33 @@ var (
 	fullScan     = flag.Bool("full", false, "Enable full scan with vulnerability checks")
 	outputFile   = flag.String("output", "results.json", "File to write results to")
 	testMode     = flag.Bool("test", false, "Run in test mode with simulated devices")
-	
+
 	// Dashboard flags
 	enableDashboard = flag.Bool("dashboard", false, "Enable web dashboard")
 	dashboardPort   = flag.String("port", "8080", "Web dashboard port")
-	
+
 	// CVE and exploit flags
-	enableLiveCVE     = flag.Bool("live-cve", false, "Enable live CVE feed")
-	cveCheckInterval  = flag.Int("cve-interval", 60, "Interval in minutes to check for new CVEs")
+	enableLiveCVE       = flag.Bool("live-cve", false, "Enable live CVE feed")
+	cveCheckInterval    = flag.Int("cve-interval", 60, "Interval in minutes to check for new CVEs")
 	enableExploitNotify = flag.Bool("exploit-notify", false, "Enable notifications for new exploits")
-	
+
 	// Report export flags
-	enableExport      = flag.Bool("export", false, "Enable scan report export")
-	exportFormat      = flag.String("format", "json", "Export format (json, csv, md, html, pdf)")
-	exportFullData    = flag.Bool("export-full", false, "Include full scan data in export")
-	exportDirectory   = flag.String("export-dir", "reports", "Directory to save exported reports")
-	
+	enableExport    = flag.Bool("export", false, "Enable scan report export")
+	exportFormat    = flag.String("format", "json", "Export format (json, csv, md, html, pdf)")
+	exportFullData  = flag.Bool("export-full", false, "Include full scan data in export")
+	exportDirectory = flag.String("export-dir", "reports", "Directory to save exported reports")
+
 	// General flags
 	help = flag.Bool("help", false, "Show help message")
-	
+
 	// Scan tracking variables
 	scanStartTime time.Time
 	scanDuration  time.Duration
-	
+
 	// Global CVE database
 	globalCVEDB     = make(map[string]CVEData)
 	globalCVEDBLock = sync.RWMutex{}
-	
+
 	// Notification center
 	notifications   = []Notification{}
 	notificationsMu = sync.RWMutex{}
@@ -150,7 +151,7 @@ func exportScanReport(devices []models.Device) {
 	// Create a report timestamp
 	timestamp := time.Now()
 	timeStr := timestamp.Format("20060102-150405")
-	
+
 	// Count vulnerable devices
 	vulnerableCount := 0
 	for _, device := range devices {
@@ -158,7 +159,7 @@ func exportScanReport(devices []models.Device) {
 			vulnerableCount++
 		}
 	}
-	
+
 	// Create the report
 	report := ScanReport{
 		Timestamp:       timestamp,
@@ -169,22 +170,22 @@ func exportScanReport(devices []models.Device) {
 		ScanDuration:    scanDuration,
 		DeviceTypes:     countDeviceTypes(devices),
 	}
-	
+
 	// Add notifications if available
 	notificationsMu.RLock()
 	if len(notifications) > 0 {
 		report.Notifications = notifications
 	}
 	notificationsMu.RUnlock()
-	
+
 	// Add CVE count
 	globalCVEDBLock.RLock()
 	report.CVECount = len(globalCVEDB)
 	globalCVEDBLock.RUnlock()
-	
+
 	// Create filename based on format and timestamp
 	filename := fmt.Sprintf("%s/iot_scan_%s.%s", *exportDirectory, timeStr, *exportFormat)
-	
+
 	// Export based on format
 	switch ReportFormat(*exportFormat) {
 	case ReportFormatJSON:
@@ -199,7 +200,7 @@ func exportScanReport(devices []models.Device) {
 		color.Red("Unsupported export format: %s, defaulting to JSON", *exportFormat)
 		exportJSON(report, fmt.Sprintf("%s/iot_scan_%s.json", *exportDirectory, timeStr))
 	}
-	
+
 	color.Green("Report exported to: %s", filename)
 }
 
@@ -207,21 +208,21 @@ func exportScanReport(devices []models.Device) {
 func exportJSON(report ScanReport, filename string) error {
 	var data []byte
 	var err error
-	
+
 	// Export with pretty formatting
 	data, err = json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		color.Red("Error marshaling JSON: %v", err)
 		return err
 	}
-	
+
 	// Write to file
 	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
 		color.Red("Error writing to file: %v", err)
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -234,13 +235,13 @@ func exportCSV(report ScanReport, filename string) error {
 		return err
 	}
 	defer file.Close()
-	
+
 	// Write CSV header
 	_, err = file.WriteString("IP,MAC,Vendor,Model,OS,Firmware,OpenPorts,Vulnerabilities,LastSeen\n")
 	if err != nil {
 		return err
 	}
-	
+
 	// Write each device
 	for _, device := range report.Devices {
 		// Format open ports as comma-separated list
@@ -249,33 +250,33 @@ func exportCSV(report ScanReport, filename string) error {
 		i := 0
 		for portNum, service := range device.OpenPorts {
 			if i > 0 {
-				portList += "|" 
+				portList += "|"
 			}
 			portList += fmt.Sprintf("%d (%s)", portNum, service)
 			i++
 		}
-		
+
 		// Format vulnerabilities
 		vulnList := ""
 		for i, vuln := range device.Vulnerabilities {
 			if i > 0 {
-				vulnList += "|" 
+				vulnList += "|"
 			}
 			vulnList += vuln.ID
 		}
-		
+
 		// Write device data
 		line := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-			device.IP, device.MAC, device.Vendor, device.Model, 
+			device.IP, device.MAC, device.Vendor, device.Model,
 			device.OperatingSystem, device.FirmwareVersion, portList, vulnList,
 			device.LastSeen.Format(time.RFC3339))
-		
+
 		_, err = file.WriteString(line)
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -288,91 +289,91 @@ func exportMarkdown(report ScanReport, filename string) error {
 		return err
 	}
 	defer file.Close()
-	
+
 	// Write markdown header
 	_, err = file.WriteString(fmt.Sprintf("# IoT Security Scan Report\n\n"))
 	if err != nil {
 		return err
 	}
-	
+
 	// Write scan summary
 	_, err = file.WriteString(fmt.Sprintf("## Summary\n\n"))
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString(fmt.Sprintf("- **Scan Time**: %s\n", report.Timestamp.Format(time.RFC3339)))
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString(fmt.Sprintf("- **Network Range**: %s\n", report.NetworkRange))
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString(fmt.Sprintf("- **Total Devices**: %d\n", report.TotalDevices))
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString(fmt.Sprintf("- **Vulnerable Devices**: %d\n", report.VulnerableCount))
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString(fmt.Sprintf("- **Scan Duration**: %v\n\n", report.ScanDuration))
 	if err != nil {
 		return err
 	}
-	
+
 	// Write device table header
 	_, err = file.WriteString("## Discovered Devices\n\n")
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString("| IP | MAC | Vendor | Model | OS | Firmware | Open Ports | Vulnerabilities |\n")
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = file.WriteString("|---|---|---|---|---|---|---|---|\n")
 	if err != nil {
 		return err
 	}
-	
+
 	// Write each device
 	for _, device := range report.Devices {
 		// Format open ports
 		portList := ""
 		for i, port := range device.OpenPorts {
 			if i > 0 {
-				portList += ", " 
+				portList += ", "
 			}
 			portList += fmt.Sprintf("%s", port)
 		}
-		
+
 		// Format vulnerabilities
 		vulnList := ""
 		for i, vuln := range device.Vulnerabilities {
 			if i > 0 {
-				vulnList += ", " 
+				vulnList += ", "
 			}
 			vulnList += vuln.ID
 		}
-		
+
 		// Write device data
 		line := fmt.Sprintf("| %s | %s | %s | %s | %s | %s | %s | %s |\n",
-			device.IP, device.MAC, device.Vendor, device.Model, 
+			device.IP, device.MAC, device.Vendor, device.Model,
 			device.OperatingSystem, device.FirmwareVersion, portList, vulnList)
-		
+
 		_, err = file.WriteString(line)
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -385,7 +386,7 @@ func exportHTML(report ScanReport, filename string) error {
 		return err
 	}
 	defer file.Close()
-	
+
 	// Write HTML header
 	html := `<!DOCTYPE html>
 <html>
@@ -407,7 +408,7 @@ func exportHTML(report ScanReport, filename string) error {
 <body>
     <h1>IoT Security Scan Report</h1>
 `
-	
+
 	// Add summary section
 	html += `<h2>Summary</h2>
 <div class="summary">
@@ -419,7 +420,7 @@ func exportHTML(report ScanReport, filename string) error {
     <div class="summary-item"><strong>CVE Database Entries:</strong> ` + fmt.Sprintf("%d", report.CVECount) + `</div>
 </div>
 `
-	
+
 	// Add devices table
 	html += `<h2>Discovered Devices</h2>
 <table>
@@ -434,18 +435,18 @@ func exportHTML(report ScanReport, filename string) error {
         <th>Vulnerabilities</th>
     </tr>
 `
-	
+
 	// Add each device
 	for _, device := range report.Devices {
 		// Format open ports
 		portList := ""
 		for i, port := range device.OpenPorts {
 			if i > 0 {
-				portList += ", " 
+				portList += ", "
 			}
 			portList += fmt.Sprintf("%s", port)
 		}
-		
+
 		// Format vulnerabilities
 		vulnList := ""
 		rowClass := ""
@@ -453,12 +454,12 @@ func exportHTML(report ScanReport, filename string) error {
 			rowClass = " class=\"vulnerable\""
 			for i, vuln := range device.Vulnerabilities {
 				if i > 0 {
-					vulnList += ", " 
+					vulnList += ", "
 				}
 				vulnList += vuln.ID
 			}
 		}
-		
+
 		// Write device row
 		html += fmt.Sprintf("    <tr%s>\n", rowClass) +
 			fmt.Sprintf("        <td>%s</td>\n", device.IP) +
@@ -471,12 +472,12 @@ func exportHTML(report ScanReport, filename string) error {
 			fmt.Sprintf("        <td>%s</td>\n", vulnList) +
 			"    </tr>\n"
 	}
-	
+
 	// Close HTML
 	html += `</table>
 
 `
-	
+
 	// Add notifications if any
 	if len(report.Notifications) > 0 {
 		html += `<h2>Security Notifications</h2>
@@ -489,7 +490,7 @@ func exportHTML(report ScanReport, filename string) error {
         <th>Related CVE</th>
     </tr>
 `
-		
+
 		for _, notif := range report.Notifications {
 			html += fmt.Sprintf("    <tr>\n") +
 				fmt.Sprintf("        <td>%s</td>\n", notif.Timestamp.Format(time.RFC3339)) +
@@ -499,42 +500,42 @@ func exportHTML(report ScanReport, filename string) error {
 				fmt.Sprintf("        <td>%s</td>\n", notif.RelatedCVE) +
 				"    </tr>\n"
 		}
-		
+
 		html += `</table>
 `
 	}
-	
+
 	// Footer with timestamp
 	html += `<p><em>Report generated on ` + time.Now().Format(time.RFC3339) + `</em></p>
 </body>
 </html>`
-	
+
 	// Write to file
 	_, err = file.WriteString(html)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
 func main() {
 	// Parse flags
 	flag.Parse()
-	
+
 	if *help {
 		printHelp()
 		return
 	}
-	
+
 	// Prepare export directory if needed
 	if *enableExport {
 		os.MkdirAll(*exportDirectory, 0755)
 	}
-	
+
 	// Load or initialize CVE database
 	loadCVEDatabase()
-	
+
 	// Track scan start time
 	scanStartTime = time.Now()
 
@@ -561,19 +562,19 @@ func main() {
 		DatabasePath:  "data",
 		OutputFile:    *outputFile,
 	}
-	
+
 	// Make sure data directories exist
 	os.MkdirAll("data", 0755)
-	
+
 	// Create context with cancellation for graceful shutdown
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	
+
 	// Start live CVE feed in background if enabled
 	if *enableLiveCVE {
 		go startLiveCVEFeed(ctx, logger)
 	}
-	
+
 	// Handle Ctrl+C for graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
@@ -587,10 +588,10 @@ func main() {
 
 	// Initialize scanner
 	scanner := discovery.NewScanner(scannerConfig)
-	
+
 	// Create fingerprinter
 	fp := fingerprint.NewFingerprinter(scannerConfig)
-	
+
 	// Initialize dashboard if enabled
 	var dashboard *api.Dashboard
 	if *enableDashboard {
@@ -605,7 +606,7 @@ func main() {
 
 		color.Green("Initializing web dashboard...")
 		dashboard = api.NewDashboard(dashboardConfig, logger)
-		
+
 		// Start the dashboard in a goroutine
 		go func() {
 			color.Green("Web dashboard is running at: http://localhost:%s", *dashboardPort)
@@ -618,7 +619,7 @@ func main() {
 	// Determine if we are in test mode or real scan mode
 	var devices []models.Device
 	var err error
-	
+
 	if *testMode {
 		// Use simulated devices for testing
 		color.Green("Running in TEST MODE with simulated devices")
@@ -627,7 +628,7 @@ func main() {
 		// Perform the actual network scan
 		color.Green("Starting network scan on range: %s", *networkRange)
 		color.Yellow("This may take several minutes depending on the size of the network and scan options")
-		
+
 		// Start time already tracked globally as scanStartTime
 		devices, err = scanner.Discover()
 		if err != nil {
@@ -635,7 +636,7 @@ func main() {
 			return
 		}
 	}
-	
+
 	// If full scan is enabled, try to fingerprint devices
 	if *fullScan {
 		color.Yellow("Fingerprinting discovered devices...")
@@ -646,21 +647,21 @@ func main() {
 			}
 		}
 	}
-	
+
 	// Save results to file
 	if err := config.WriteResultsToFile(devices, *outputFile); err != nil {
 		color.Red("Failed to write results: %v", err)
 	} else {
 		color.Green("Scan results saved to %s", *outputFile)
 	}
-	
+
 	// Process device types
 	deviceTypeCounts := DeviceTypeCount{}
-	
+
 	for i := range devices {
 		// Add device type tag
 		deviceType := detectDeviceType(&devices[i])
-		
+
 		// Add to appropriate count
 		switch deviceType {
 		case DeviceTypeIPCamera:
@@ -689,23 +690,23 @@ func main() {
 			devices[i].Tags = append(devices[i].Tags, "unknown")
 		}
 	}
-	
+
 	// Add to dashboard if enabled
 	if *enableDashboard && dashboard != nil {
 		dashboard.AddScanResult(devices)
-		
+
 		// Check for vulnerabilities against our CVE database
 		if *enableLiveCVE {
 			checkDevicesAgainstCVEDB(devices, dashboard)
 		}
 	}
-	
+
 	// Calculate scan duration
 	scanDuration = time.Since(scanStartTime)
-	
+
 	// Print scan summary
 	printScanSummary(devices)
-	
+
 	// Export report if enabled
 	if *enableExport {
 		exportScanReport(devices)
@@ -715,36 +716,36 @@ func main() {
 func printScanSummary(devices []models.Device) {
 	color.Green("\nScan completed in %v", scanDuration)
 	color.Green("Found %d devices on the network", len(devices))
-	
+
 	// Count device types
 	deviceTypeCounts := countDeviceTypes(devices)
-	
+
 	// Highlight specific device types of interest
 	if deviceTypeCounts.IPCameras > 0 {
 		color.Cyan("  - IP Cameras detected: %d", deviceTypeCounts.IPCameras)
 	}
-	
+
 	if deviceTypeCounts.WiFiDevices > 0 {
 		color.Cyan("  - WiFi devices detected: %d", deviceTypeCounts.WiFiDevices)
 	}
-	
+
 	if deviceTypeCounts.Bluetooth > 0 {
 		color.Cyan("  - Bluetooth devices detected: %d", deviceTypeCounts.Bluetooth)
 	}
-	
+
 	if deviceTypeCounts.Routers > 0 {
 		color.Cyan("  - Routers detected: %d", deviceTypeCounts.Routers)
 	}
-	
+
 	if deviceTypeCounts.SmartHome > 0 {
 		color.Cyan("  - Smart Home devices detected: %d", deviceTypeCounts.SmartHome)
 	}
-	
+
 	// Print device summary
 	identifiedCount := 0
 	vulnerableCount := 0
 	defaultCredsCount := 0
-	
+
 	for _, device := range devices {
 		if device.Vendor != "" || device.Model != "" {
 			identifiedCount++
@@ -756,7 +757,7 @@ func printScanSummary(devices []models.Device) {
 			defaultCredsCount++
 		}
 	}
-	
+
 	color.Green("Identified devices: %d", identifiedCount)
 	if vulnerableCount > 0 {
 		color.Red("Vulnerable devices: %d", vulnerableCount)
@@ -764,12 +765,12 @@ func printScanSummary(devices []models.Device) {
 	if defaultCredsCount > 0 {
 		color.Red("Devices with default credentials: %d", defaultCredsCount)
 	}
-	
+
 	// If dashboard is enabled, wait for user to exit
 	if *enableDashboard {
 		color.Green("\nWeb dashboard is running at: http://localhost:%s", *dashboardPort)
 		color.Yellow("Press Ctrl+C to exit")
-		
+
 		// Wait for user to press Ctrl+C
 		waitCh := make(chan os.Signal, 1)
 		signal.Notify(waitCh, os.Interrupt, syscall.SIGTERM)
@@ -781,7 +782,7 @@ func printScanSummary(devices []models.Device) {
 // countDeviceTypes counts the different types of devices in the scan results
 func countDeviceTypes(devices []models.Device) DeviceTypeCount {
 	counts := DeviceTypeCount{}
-	
+
 	for i := range devices {
 		// Check device type from tags (if already processed)
 		deviceType := DeviceTypeUnknown
@@ -810,7 +811,7 @@ func countDeviceTypes(devices []models.Device) DeviceTypeCount {
 				continue
 			}
 		}
-		
+
 		// If no tag found, detect the device type
 		if deviceType == DeviceTypeUnknown {
 			deviceType = detectDeviceType(&devices[i])
@@ -834,7 +835,7 @@ func countDeviceTypes(devices []models.Device) DeviceTypeCount {
 			}
 		}
 	}
-	
+
 	return counts
 }
 
@@ -842,7 +843,7 @@ func countDeviceTypes(devices []models.Device) DeviceTypeCount {
 func generateTestDevices() []models.Device {
 	// Get current time for timestamps
 	now := time.Now()
-	
+
 	// Create a variety of simulated devices
 	devices := []models.Device{
 		{
@@ -926,7 +927,7 @@ func generateTestDevices() []models.Device {
 			},
 		},
 	}
-	
+
 	// Return the simulated devices
 	return devices
 }
@@ -940,23 +941,22 @@ func printHelp() {
 	fmt.Println("  -verbose          Enable verbose output")
 	fmt.Println("  -full             Enable full scan with vulnerability checks")
 	fmt.Println("  -output string    File to write results to (default \"results.json\")")
-	
+
 	fmt.Println("\nDashboard Options:")
 	fmt.Println("  -dashboard        Enable web dashboard")
 	fmt.Println("  -port string      Web dashboard port (default \"8080\")")
-	
+
 	fmt.Println("\nCVE and Exploit Options:")
 	fmt.Println("  -live-cve         Enable live CVE feed")
 	fmt.Println("  -cve-interval     Interval in minutes to check for new CVEs (default 60)")
 	fmt.Println("  -exploit-notify   Enable notifications for new exploits")
-	
+
 	fmt.Println("\nReport Export Options:")
 	fmt.Println("  -export           Enable scan report export")
 	fmt.Println("  -format string    Export format: json, csv, md, html, pdf (default \"json\")")
 	fmt.Println("  -export-full      Include full scan data in export")
 	fmt.Println("  -export-dir       Directory to save exported reports (default \"reports\")")
-	
-	
+
 	fmt.Println("\nExamples:")
 	fmt.Println("  # Basic scan:")
 	fmt.Println("  sudo ./integrated_scanner -range 192.168.1.0/24")
@@ -988,7 +988,7 @@ func loadCVEDatabase() {
 			return
 		}
 	}
-	
+
 	// Initialize with some example high-risk IoT CVEs
 	globalCVEDB = map[string]CVEData{
 		"CVE-2021-36260": {
@@ -1036,10 +1036,10 @@ func loadCVEDatabase() {
 			References:  []string{"https://nvd.nist.gov/vuln/detail/CVE-2019-9483"},
 		},
 	}
-	
+
 	// Create directory if it doesn't exist
 	os.MkdirAll("data", 0755)
-	
+
 	// Save initial database
 	saveCVEDatabase()
 }
@@ -1048,7 +1048,7 @@ func loadCVEDatabase() {
 func saveCVEDatabase() {
 	globalCVEDBLock.RLock()
 	defer globalCVEDBLock.RUnlock()
-	
+
 	data, err := json.MarshalIndent(globalCVEDB, "", "  ")
 	if err == nil {
 		os.WriteFile("data/cve_database.json", data, 0644)
@@ -1058,14 +1058,14 @@ func saveCVEDatabase() {
 // startLiveCVEFeed starts a background goroutine to fetch new CVEs periodically
 func startLiveCVEFeed(ctx context.Context, logger *logrus.Logger) {
 	color.Green("Starting live CVE feed. Checking for updates every %d minutes", *cveCheckInterval)
-	
+
 	// Do an initial check
 	fetchLatestCVEs(logger)
-	
+
 	// Then set up a ticker for periodic checks
 	ticker := time.NewTicker(time.Duration(*cveCheckInterval) * time.Minute)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ticker.C:
@@ -1081,11 +1081,11 @@ func startLiveCVEFeed(ctx context.Context, logger *logrus.Logger) {
 func fetchLatestCVEs(logger *logrus.Logger) {
 	// In a real implementation, this would call an actual CVE API
 	// For this demo, we'll simulate finding a new CVE periodically
-	
+
 	// Generate a random "new" CVE to simulate the feed
 	timeStamp := time.Now()
 	timeStampStr := timeStamp.Format("20060102-150405")
-	
+
 	// Create a simulated new CVE
 	newCVE := CVEData{
 		ID:          fmt.Sprintf("CVE-2025-%s", timeStampStr[4:8]),
@@ -1106,31 +1106,31 @@ func fetchLatestCVEs(logger *logrus.Logger) {
 			"https://example.com/cve-database",
 		},
 	}
-	
+
 	// Add to our database
 	globalCVEDBLock.Lock()
 	globalCVEDB[newCVE.ID] = newCVE
 	globalCVEDBLock.Unlock()
-	
+
 	// Save updated database
 	saveCVEDatabase()
-	
+
 	// Create notification about new CVE
 	if *enableExploitNotify {
 		notification := Notification{
-			Timestamp:  timeStamp,
-			Level:      "critical",
-			Title:      fmt.Sprintf("New Exploit Available: %s", newCVE.ID),
-			Message:    fmt.Sprintf("A new exploit has been detected for %s. This affects %s devices and is rated %s severity.", 
+			Timestamp: timeStamp,
+			Level:     "critical",
+			Title:     fmt.Sprintf("New Exploit Available: %s", newCVE.ID),
+			Message: fmt.Sprintf("A new exploit has been detected for %s. This affects %s devices and is rated %s severity.",
 				newCVE.ID, strings.Join(newCVE.Affected, ", "), newCVE.Severity),
-			RelatedCVE: newCVE.ID,
+			RelatedCVE:  newCVE.ID,
 			Remediation: "Apply security updates from manufacturer as soon as they become available.",
 		}
-		
+
 		notificationsMu.Lock()
 		notifications = append(notifications, notification)
 		notificationsMu.Unlock()
-		
+
 		// Display the notification
 		color.Red("\n!!! NEW EXPLOIT DETECTED !!!")
 		color.Red("CVE: %s", newCVE.ID)
@@ -1139,7 +1139,7 @@ func fetchLatestCVEs(logger *logrus.Logger) {
 		color.Red("Affected: %s", strings.Join(newCVE.Affected, ", "))
 		color.Yellow("Remediation: Apply security updates from manufacturer as soon as they become available.")
 	}
-	
+
 	logger.Infof("Updated CVE database with %d total entries", len(globalCVEDB))
 }
 
@@ -1147,26 +1147,26 @@ func fetchLatestCVEs(logger *logrus.Logger) {
 func checkDevicesAgainstCVEDB(devices []models.Device, _ *api.Dashboard) {
 	globalCVEDBLock.RLock()
 	defer globalCVEDBLock.RUnlock()
-	
+
 	for i, device := range devices {
 		vulnDevices := findVulnerabilities(&devices[i])
-		
+
 		if len(vulnDevices) > 0 && *enableExploitNotify {
 			// Create notification for vulnerable device
 			notification := Notification{
-				Timestamp:   time.Now(),
-				Level:       "warning",
-				Title:       fmt.Sprintf("Vulnerable Device: %s", device.IP),
-				Message:     fmt.Sprintf("%s %s running firmware %s is vulnerable to %d known exploits", 
+				Timestamp: time.Now(),
+				Level:     "warning",
+				Title:     fmt.Sprintf("Vulnerable Device: %s", device.IP),
+				Message: fmt.Sprintf("%s %s running firmware %s is vulnerable to %d known exploits",
 					device.Vendor, device.Model, device.FirmwareVersion, len(vulnDevices)),
 				AffectedIPs: []string{device.IP},
 				Remediation: "Update device firmware and change default credentials if present.",
 			}
-			
+
 			notificationsMu.Lock()
 			notifications = append(notifications, notification)
 			notificationsMu.Unlock()
-			
+
 			// Display notification
 			color.Yellow("\n! VULNERABLE DEVICE DETECTED !")
 			color.Yellow("IP: %s", device.IP)
@@ -1181,34 +1181,34 @@ func checkDevicesAgainstCVEDB(devices []models.Device, _ *api.Dashboard) {
 func detectDeviceType(device *models.Device) DeviceType {
 	// Initialize as unknown
 	deviceType := DeviceTypeUnknown
-	
+
 	// Check for IP cameras based on ports, banners, and vendor
 	if isIPCamera(device) {
 		return DeviceTypeIPCamera
 	}
-	
+
 	// Check for WiFi devices
 	if isWiFiDevice(device) {
 		return DeviceTypeWiFi
 	}
-	
+
 	// Check for Bluetooth devices
 	if isBluetoothDevice(device) {
 		return DeviceTypeBluetooth
 	}
-	
+
 	// Check for routers
 	if isRouter(device) {
 		return DeviceTypeRouter
 	}
-	
+
 	// Check for smart home devices
 	if isSmartHomeDevice(device) {
 		return DeviceTypeSmartHome
 	}
-	
+
 	// Other device types can be added here
-	
+
 	return deviceType
 }
 
@@ -1216,7 +1216,7 @@ func detectDeviceType(device *models.Device) DeviceType {
 func isIPCamera(device *models.Device) bool {
 	// Common IP camera ports
 	cameraPorts := []int{80, 443, 554, 1935, 8000, 8080, 8554, 9000}
-	
+
 	// Check if device has any of the camera ports open
 	for _, port := range cameraPorts {
 		if _, ok := device.OpenPorts[port]; ok {
@@ -1226,41 +1226,41 @@ func isIPCamera(device *models.Device) bool {
 			}
 		}
 	}
-	
+
 	// Check banners for camera-related strings
 	for _, banner := range device.Banners {
 		bannerLower := strings.ToLower(banner)
-		if strings.Contains(bannerLower, "camera") || 
-		   strings.Contains(bannerLower, "ipcam") || 
-		   strings.Contains(bannerLower, "netcam") || 
-		   strings.Contains(bannerLower, "webcam") {
+		if strings.Contains(bannerLower, "camera") ||
+			strings.Contains(bannerLower, "ipcam") ||
+			strings.Contains(bannerLower, "netcam") ||
+			strings.Contains(bannerLower, "webcam") {
 			return true
 		}
 	}
-	
+
 	// Check vendor for known camera manufacturers
 	knownCameraVendors := []string{
-		"hikvision", "dahua", "axis", "hanwha", "vivotek", "tplink", 
+		"hikvision", "dahua", "axis", "hanwha", "vivotek", "tplink",
 		"foscam", "nest", "arlo", "wyze", "reolink", "amcrest", "lorex",
 		"swann", "unifi", "dlink", "eufy", "ezviz", "geovision",
 	}
-	
+
 	vendorLower := strings.ToLower(device.Vendor)
 	for _, vendor := range knownCameraVendors {
 		if strings.Contains(vendorLower, vendor) {
 			return true
 		}
 	}
-	
+
 	// Check model name for camera indicators
 	modelLower := strings.ToLower(device.Model)
-	if strings.Contains(modelLower, "cam") || 
-	   strings.Contains(modelLower, "ipc") || 
-	   strings.Contains(modelLower, "dvr") || 
-	   strings.Contains(modelLower, "nvr") {
+	if strings.Contains(modelLower, "cam") ||
+		strings.Contains(modelLower, "ipc") ||
+		strings.Contains(modelLower, "dvr") ||
+		strings.Contains(modelLower, "nvr") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -1268,7 +1268,7 @@ func isIPCamera(device *models.Device) bool {
 func isWiFiDevice(device *models.Device) bool {
 	// Common WiFi device ports
 	wifiPorts := []int{53, 67, 68, 80, 443, 8080, 8888}
-	
+
 	// Check if the device has multiple WiFi-related ports open
 	wifiPortCount := 0
 	for _, port := range wifiPorts {
@@ -1276,46 +1276,46 @@ func isWiFiDevice(device *models.Device) bool {
 			wifiPortCount++
 		}
 	}
-	
+
 	// If device has several WiFi-related ports, it's likely a WiFi device
 	if wifiPortCount >= 3 {
 		return true
 	}
-	
+
 	// Check vendor for known WiFi device manufacturers
 	knownWiFiVendors := []string{
 		"cisco", "netgear", "linksys", "tp-link", "tplink", "asus", "d-link", "dlink",
-		"belkin", "ubiquiti", "huawei", "aruba", "meraki", "ruckus", "mikrotik", 
+		"belkin", "ubiquiti", "huawei", "aruba", "meraki", "ruckus", "mikrotik",
 		"zyxel", "actiontec", "buffalo", "eero", "google wifi", "nest wifi",
 	}
-	
+
 	vendorLower := strings.ToLower(device.Vendor)
 	for _, vendor := range knownWiFiVendors {
 		if strings.Contains(vendorLower, vendor) {
 			return true
 		}
 	}
-	
+
 	// Check services for WiFi-related protocols
 	for service := range device.Services {
 		serviceLower := strings.ToLower(service)
-		if strings.Contains(serviceLower, "wifi") || 
-		   strings.Contains(serviceLower, "wireless") || 
-		   strings.Contains(serviceLower, "wlan") {
+		if strings.Contains(serviceLower, "wifi") ||
+			strings.Contains(serviceLower, "wireless") ||
+			strings.Contains(serviceLower, "wlan") {
 			return true
 		}
 	}
-	
+
 	// Check model name for WiFi indicators
 	modelLower := strings.ToLower(device.Model)
-	if strings.Contains(modelLower, "wifi") || 
-	   strings.Contains(modelLower, "wireless") || 
-	   strings.Contains(modelLower, "wlan") || 
-	   strings.Contains(modelLower, "router") || 
-	   strings.Contains(modelLower, "access point") {
+	if strings.Contains(modelLower, "wifi") ||
+		strings.Contains(modelLower, "wireless") ||
+		strings.Contains(modelLower, "wlan") ||
+		strings.Contains(modelLower, "router") ||
+		strings.Contains(modelLower, "access point") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -1323,40 +1323,40 @@ func isWiFiDevice(device *models.Device) bool {
 func isBluetoothDevice(device *models.Device) bool {
 	// Note: Bluetooth devices typically aren't directly accessible via IP
 	// This function relies on device information that might indicate Bluetooth capability
-	
+
 	// Check vendor for known Bluetooth device manufacturers
 	knownBluetoothVendors := []string{
-		"bose", "sony", "jabra", "logitech", "jbl", "samsung", "lg", 
-		"apple", "beats", "sennheiser", "plantronics", "poly", "anker", 
+		"bose", "sony", "jabra", "logitech", "jbl", "samsung", "lg",
+		"apple", "beats", "sennheiser", "plantronics", "poly", "anker",
 		"xiaomi", "huawei", "oneplus", "nokia", "motorola",
 	}
-	
+
 	vendorLower := strings.ToLower(device.Vendor)
 	for _, vendor := range knownBluetoothVendors {
 		if strings.Contains(vendorLower, vendor) {
 			// Further check model for Bluetooth indicators
 			modelLower := strings.ToLower(device.Model)
-			if strings.Contains(modelLower, "bt") || 
-			   strings.Contains(modelLower, "bluetooth") || 
-			   strings.Contains(modelLower, "wireless") || 
-			   strings.Contains(modelLower, "headset") || 
-			   strings.Contains(modelLower, "earbuds") || 
-			   strings.Contains(modelLower, "speaker") {
+			if strings.Contains(modelLower, "bt") ||
+				strings.Contains(modelLower, "bluetooth") ||
+				strings.Contains(modelLower, "wireless") ||
+				strings.Contains(modelLower, "headset") ||
+				strings.Contains(modelLower, "earbuds") ||
+				strings.Contains(modelLower, "speaker") {
 				return true
 			}
 		}
 	}
-	
+
 	// Check for Bluetooth-related services
 	for service := range device.Services {
 		serviceLower := strings.ToLower(service)
-		if strings.Contains(serviceLower, "bluetooth") || 
-		   strings.Contains(serviceLower, "bt") || 
-		   strings.Contains(serviceLower, "a2dp") {
+		if strings.Contains(serviceLower, "bluetooth") ||
+			strings.Contains(serviceLower, "bt") ||
+			strings.Contains(serviceLower, "a2dp") {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -1365,40 +1365,40 @@ func isRouter(device *models.Device) bool {
 	// Check common router ports
 	routerPorts := []int{22, 23, 53, 80, 443, 8080, 8443}
 	routerPortCount := 0
-	
+
 	for _, port := range routerPorts {
 		if _, ok := device.OpenPorts[port]; ok {
 			routerPortCount++
 		}
 	}
-	
+
 	// If many router ports are open, it's likely a router
 	if routerPortCount >= 3 {
 		return true
 	}
-	
+
 	// Check vendor for known router manufacturers
 	knownRouterVendors := []string{
-		"cisco", "netgear", "linksys", "tp-link", "tplink", "asus", 
+		"cisco", "netgear", "linksys", "tp-link", "tplink", "asus",
 		"d-link", "dlink", "huawei", "mikrotik", "ubiquiti", "edge",
 		"zyxel", "actiontec", "belkin", "buffalo", "arris", "technicolor",
 	}
-	
+
 	vendorLower := strings.ToLower(device.Vendor)
 	for _, vendor := range knownRouterVendors {
 		if strings.Contains(vendorLower, vendor) {
 			return true
 		}
 	}
-	
+
 	// Check model for router indicators
 	modelLower := strings.ToLower(device.Model)
-	if strings.Contains(modelLower, "router") || 
-	   strings.Contains(modelLower, "gateway") || 
-	   strings.Contains(modelLower, "modem") {
+	if strings.Contains(modelLower, "router") ||
+		strings.Contains(modelLower, "gateway") ||
+		strings.Contains(modelLower, "modem") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -1406,34 +1406,34 @@ func isRouter(device *models.Device) bool {
 func isSmartHomeDevice(device *models.Device) bool {
 	// Check vendor for known smart home device manufacturers
 	knownSmartHomeVendors := []string{
-		"philips", "hue", "nest", "ring", "ecobee", "august", 
-		"chamberlain", "lutron", "wemo", "insteon", "smartthings", 
-		"google", "amazon", "apple", "lifx", "tplink", "xiaomi", 
+		"philips", "hue", "nest", "ring", "ecobee", "august",
+		"chamberlain", "lutron", "wemo", "insteon", "smartthings",
+		"google", "amazon", "apple", "lifx", "tplink", "xiaomi",
 		"tuya", "wink", "honeywell", "arlo", "eufy", "sonos",
 	}
-	
+
 	vendorLower := strings.ToLower(device.Vendor)
 	for _, vendor := range knownSmartHomeVendors {
 		if strings.Contains(vendorLower, vendor) {
 			return true
 		}
 	}
-	
+
 	// Check model for smart home indicators
 	modelLower := strings.ToLower(device.Model)
-	if strings.Contains(modelLower, "smart") || 
-	   strings.Contains(modelLower, "home") || 
-	   strings.Contains(modelLower, "thermostat") || 
-	   strings.Contains(modelLower, "switch") || 
-	   strings.Contains(modelLower, "sensor") || 
-	   strings.Contains(modelLower, "plug") || 
-	   strings.Contains(modelLower, "hub") || 
-	   strings.Contains(modelLower, "bulb") || 
-	   strings.Contains(modelLower, "doorbell") || 
-	   strings.Contains(modelLower, "lock") {
+	if strings.Contains(modelLower, "smart") ||
+		strings.Contains(modelLower, "home") ||
+		strings.Contains(modelLower, "thermostat") ||
+		strings.Contains(modelLower, "switch") ||
+		strings.Contains(modelLower, "sensor") ||
+		strings.Contains(modelLower, "plug") ||
+		strings.Contains(modelLower, "hub") ||
+		strings.Contains(modelLower, "bulb") ||
+		strings.Contains(modelLower, "doorbell") ||
+		strings.Contains(modelLower, "lock") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -1441,16 +1441,16 @@ func findVulnerabilities(device *models.Device) []models.Vulnerability {
 	if device.Vendor == "" {
 		return nil
 	}
-	
+
 	var vulnerabilities []models.Vulnerability
-	
+
 	// Check device against known CVEs
 	for _, cve := range globalCVEDB {
 		// Simple check - in a real implementation this would be more sophisticated
 		for _, affected := range cve.Affected {
 			if strings.Contains(strings.ToLower(affected), strings.ToLower(device.Vendor)) ||
-			   (device.Model != "" && strings.Contains(strings.ToLower(affected), strings.ToLower(device.Model))) {
-				
+				(device.Model != "" && strings.Contains(strings.ToLower(affected), strings.ToLower(device.Model))) {
+
 				// Check if this vulnerability is already in the device
 				alreadyAdded := false
 				for _, v := range device.Vulnerabilities {
@@ -1459,7 +1459,7 @@ func findVulnerabilities(device *models.Device) []models.Vulnerability {
 						break
 					}
 				}
-				
+
 				if !alreadyAdded {
 					vuln := models.Vulnerability{
 						ID:          cve.ID,
@@ -1467,19 +1467,19 @@ func findVulnerabilities(device *models.Device) []models.Vulnerability {
 						Description: cve.Description,
 						Severity:    cve.Severity,
 					}
-					
+
 					if len(cve.References) > 0 {
 						vuln.References = cve.References
 					}
-					
+
 					vulnerabilities = append(vulnerabilities, vuln)
 					device.Vulnerabilities = append(device.Vulnerabilities, vuln)
 				}
-				
+
 				break
 			}
 		}
 	}
-	
+
 	return vulnerabilities
 }

@@ -1,4 +1,4 @@
-module github.com/ExclusiveAccount/iot-scanner
+module iot-scanner
 
 go 1.21
 

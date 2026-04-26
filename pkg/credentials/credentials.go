@@ -9,13 +9,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/config"
+
+	"iot-scanner
 )
 
 // Checker checks for default credentials
 type Checker struct {
-	config        config.Config
+	config         config.Config
 	credentialSets []CredentialSet
 }
 
@@ -74,67 +75,67 @@ func (c *Checker) loadCredentials() error {
 func (c *Checker) createDefaultCredentials() {
 	c.credentialSets = []CredentialSet{
 		{
-			Vendor:    "Hikvision",
-			Model:     "IP Camera",
-			Service:   "Web",
-			Port:      80,
-			Protocol:  "HTTP",
-			Usernames: []string{"admin"},
-			Passwords: []string{"12345", "admin", "Admin12345"},
-			LoginPath: "/login.asp",
-			PostParams: "username={USERNAME}&password={PASSWORD}",
+			Vendor:      "Hikvision",
+			Model:       "IP Camera",
+			Service:     "Web",
+			Port:        80,
+			Protocol:    "HTTP",
+			Usernames:   []string{"admin"},
+			Passwords:   []string{"12345", "admin", "Admin12345"},
+			LoginPath:   "/login.asp",
+			PostParams:  "username={USERNAME}&password={PASSWORD}",
 			SuccessText: "Welcome",
 			FailureText: "Invalid username or password",
 		},
 		{
-			Vendor:    "Dahua",
-			Model:     "IP Camera",
-			Service:   "Web",
-			Port:      80,
-			Protocol:  "HTTP",
-			Usernames: []string{"admin"},
-			Passwords: []string{"admin", "Admin123", ""},
-			LoginPath: "/RPC2_Login",
-			PostParams: "method=global.login&params={\"userName\":\"{USERNAME}\",\"password\":\"{PASSWORD}\",\"clientType\":\"Web\"}",
+			Vendor:      "Dahua",
+			Model:       "IP Camera",
+			Service:     "Web",
+			Port:        80,
+			Protocol:    "HTTP",
+			Usernames:   []string{"admin"},
+			Passwords:   []string{"admin", "Admin123", ""},
+			LoginPath:   "/RPC2_Login",
+			PostParams:  "method=global.login&params={\"userName\":\"{USERNAME}\",\"password\":\"{PASSWORD}\",\"clientType\":\"Web\"}",
 			SuccessText: "\"result\":true",
 			FailureText: "\"result\":false",
 		},
 		{
-			Vendor:    "TP-Link",
-			Model:     "Router",
-			Service:   "Web",
-			Port:      80,
-			Protocol:  "HTTP",
-			Usernames: []string{"admin"},
-			Passwords: []string{"admin", "password", "tp-link"},
-			LoginPath: "/login.cgi",
-			PostParams: "username={USERNAME}&password={PASSWORD}",
+			Vendor:      "TP-Link",
+			Model:       "Router",
+			Service:     "Web",
+			Port:        80,
+			Protocol:    "HTTP",
+			Usernames:   []string{"admin"},
+			Passwords:   []string{"admin", "password", "tp-link"},
+			LoginPath:   "/login.cgi",
+			PostParams:  "username={USERNAME}&password={PASSWORD}",
 			SuccessText: "success",
 			FailureText: "error",
 		},
 		{
-			Vendor:    "D-Link",
-			Model:     "Router",
-			Service:   "Web",
-			Port:      80,
-			Protocol:  "HTTP",
-			Usernames: []string{"admin"},
-			Passwords: []string{"admin", "password", ""}, // Added comma here
-			LoginPath: "/login.cgi",
-			PostParams: "username={USERNAME}&password={PASSWORD}",
+			Vendor:      "D-Link",
+			Model:       "Router",
+			Service:     "Web",
+			Port:        80,
+			Protocol:    "HTTP",
+			Usernames:   []string{"admin"},
+			Passwords:   []string{"admin", "password", ""}, // Added comma here
+			LoginPath:   "/login.cgi",
+			PostParams:  "username={USERNAME}&password={PASSWORD}",
 			SuccessText: "success",
 			FailureText: "error",
 		},
 		{
-			Vendor:    "Netgear",
-			Model:     "Router",
-			Service:   "Web",
-			Port:      80,
-			Protocol:  "HTTP",
-			Usernames: []string{"admin"},
-			Passwords: []string{"password", "admin", "netgear"},
-			LoginPath: "/login.cgi",
-			PostParams: "username={USERNAME}&password={PASSWORD}",
+			Vendor:      "Netgear",
+			Model:       "Router",
+			Service:     "Web",
+			Port:        80,
+			Protocol:    "HTTP",
+			Usernames:   []string{"admin"},
+			Passwords:   []string{"password", "admin", "netgear"},
+			LoginPath:   "/login.cgi",
+			PostParams:  "username={USERNAME}&password={PASSWORD}",
 			SuccessText: "success",
 			FailureText: "error",
 		},
@@ -239,9 +240,9 @@ func (c *Checker) checkHTTPCredentials(device *discovery.Device, credSet Credent
 					Valid:    true,
 				}
 				validCredentials = append(validCredentials, cred)
-				
+
 				if c.config.Verbose {
-					fmt.Printf("Found valid credentials for %s:%d (%s): %s/%s\n", 
+					fmt.Printf("Found valid credentials for %s:%d (%s): %s/%s\n",
 						device.IP, credSet.Port, credSet.Service, username, password)
 				}
 			}
@@ -329,9 +330,9 @@ func (c *Checker) checkTelnetCredentials(device *discovery.Device, credSet Crede
 					Valid:    true,
 				}
 				validCredentials = append(validCredentials, cred)
-				
+
 				if c.config.Verbose {
-					fmt.Printf("Found valid Telnet credentials for %s: %s/%s\n", 
+					fmt.Printf("Found valid Telnet credentials for %s: %s/%s\n",
 						device.IP, username, password)
 				}
 			}
@@ -365,9 +366,9 @@ func (c *Checker) checkFTPCredentials(device *discovery.Device, credSet Credenti
 					Valid:    true,
 				}
 				validCredentials = append(validCredentials, cred)
-				
+
 				if c.config.Verbose {
-					fmt.Printf("Found valid FTP credentials for %s: %s/%s\n", 
+					fmt.Printf("Found valid FTP credentials for %s: %s/%s\n",
 						device.IP, username, password)
 				}
 			}

@@ -9,15 +9,15 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/credentials"
-	"github.com/renm226/iot-scanner/pkg/discovery"
-	"github.com/renm226/iot-scanner/pkg/exploit"
-	"github.com/renm226/iot-scanner/pkg/fingerprint"
-	"github.com/renm226/iot-scanner/pkg/firmware"
-	"github.com/renm226/iot-scanner/pkg/pcap"
-	"github.com/renm226/iot-scanner/pkg/vulnerability"
+	"iot-scanner
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/credentials"
+	"iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/exploit"
+	"iot-scanner/pkg/fingerprint"
+	"iot-scanner/pkg/firmware"
+	"iot-scanner/pkg/pcap"
+	"iot-scanner/pkg/vulnerability"
 	"github.com/sirupsen/logrus"
 )
 

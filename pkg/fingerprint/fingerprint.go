@@ -7,8 +7,8 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/ExclusiveAccount/iot-scanner/pkg/config"
-	"github.com/ExclusiveAccount/iot-scanner/pkg/models"
+	"iot-scanner
+	"iot-scanner/pkg/models"
 )
 
 // Fingerprinter handles device fingerprinting

@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/models"
+	"iot-scanner/pkg/config"
+	"iot-scanner
 	"github.com/sirupsen/logrus"
 )
 

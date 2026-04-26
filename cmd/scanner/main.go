@@ -9,15 +9,16 @@ import (
 	"syscall"
 	"time"
 
+	"iot-scanner/pkg/api"
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/credentials"
+	"iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/fingerprint"
+	"iot-scanner/pkg/integration"
+	"iot-scanner/pkg/models"
+	"iot-scanner/pkg/vulnerability"
+
 	"github.com/fatih/color"
-	"github.com/renm226/iot-scanner/pkg/api"
-	"github.com/renm226/iot-scanner/pkg/config"
-	"github.com/renm226/iot-scanner/pkg/credentials"
-	"github.com/renm226/iot-scanner/pkg/discovery"
-	"github.com/renm226/iot-scanner/pkg/fingerprint"
-	"github.com/renm226/iot-scanner/pkg/integration"
-	"github.com/renm226/iot-scanner/pkg/models"
-	"github.com/renm226/iot-scanner/pkg/vulnerability"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,7 +40,7 @@ func RunScannerCLI() {
 	dashboardPort := flag.String("port", "8080", "Port for web dashboard")
 	export := flag.Bool("export", false, "Export results in specified format")
 	exportFormat := flag.String("format", "json", "Export format (json, csv, md, html)")
-	
+
 	flag.Parse()
 
 	// Initialize logger
@@ -58,17 +59,17 @@ func RunScannerCLI() {
 
 	// Create configuration
 	cfg := config.Config{
-		IPRange:        *ipRange,
-		FullScan:       *fullScan,
-		OutputFile:     *outputFile,
-		OutputFormat:   *exportFormat,
-		Timeout:        time.Duration(*timeout) * time.Second,
-		Threads:        *threads,
-		Verbose:        *verbose,
-		TestMode:       *testMode,
-		EnableExport:   *export,
+		IPRange:         *ipRange,
+		FullScan:        *fullScan,
+		OutputFile:      *outputFile,
+		OutputFormat:    *exportFormat,
+		Timeout:         time.Duration(*timeout) * time.Second,
+		Threads:         *threads,
+		Verbose:         *verbose,
+		TestMode:        *testMode,
+		EnableExport:    *export,
 		EnableDashboard: *dashboard,
-		DashboardPort:  *dashboardPort,
+		DashboardPort:   *dashboardPort,
 	}
 
 	logger.Debugf("Starting scan with configuration: %+v", cfg)
@@ -80,9 +81,9 @@ func RunScannerCLI() {
 
 	// Display banner
 	displayBanner()
-	
+
 	var devices []models.Device
-	
+
 	// Use test scanner if in test mode
 	if *testMode {
 		logger.Info("Running in test mode with simulated devices")
@@ -91,7 +92,7 @@ func RunScannerCLI() {
 		if err != nil {
 			logger.Fatalf("Error during test scan: %v", err)
 		}
-		
+
 		// Load results from output file
 		devices, err = loadResults(cfg.OutputFile)
 		if err != nil {
@@ -107,12 +108,12 @@ func RunScannerCLI() {
 		if err != nil {
 			logger.Fatalf("Error during device discovery: %v", err)
 		}
-		
+
 		// Convert discovery.Device to models.Device
 		devices = convertDevices(realDevices)
-		
+
 		logger.Infof("Found %d devices on the network", len(devices))
-		
+
 		// Fingerprint devices
 		logger.Info("Fingerprinting discovered devices...")
 		fingerprinter := fingerprint.NewFingerprinter(cfg)
@@ -122,7 +123,7 @@ func RunScannerCLI() {
 				logger.Errorf("Error fingerprinting device %s: %v", realDevices[i].IP, err)
 			}
 		}
-		
+
 		// Perform vulnerability scanning if full scan is enabled
 		if cfg.FullScan {
 			logger.Info("Scanning for vulnerabilities...")
@@ -146,7 +147,7 @@ func RunScannerCLI() {
 				devices[i].DefaultCredentials = convertCredentials(creds)
 			}
 		}
-		
+
 		// Save results
 		if cfg.OutputFile != "" {
 			err := config.WriteResultsToFile(devices, cfg.OutputFile)
@@ -159,7 +160,7 @@ func RunScannerCLI() {
 
 	// Display summary
 	displaySummary(devices)
-	
+
 	// Start dashboard if enabled
 	if cfg.EnableDashboard {
 		logger.Infof("Starting web dashboard on port %s", cfg.DashboardPort)
@@ -170,16 +171,16 @@ func RunScannerCLI() {
 				logger.Errorf("Dashboard server error: %v", err)
 			}
 		}()
-		
+
 		// Wait for dashboard users
 		color.Green("\nWeb dashboard running at http://localhost:%s", cfg.DashboardPort)
 		color.Green("Press Ctrl+C to exit")
-		
+
 		// Wait for interrupt signal
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 		<-c
-		
+
 		logger.Info("Shutting down...")
 	}
 
@@ -206,7 +207,7 @@ func loadResults(filePath string) ([]models.Device, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var devices []models.Device
 	err = json.Unmarshal(data, &devices)
 	return devices, err
@@ -249,52 +250,52 @@ func convertCredentials(creds interface{}) []models.Credential {
 func displaySummary(devices []models.Device) {
 	fmt.Println("\n=== Scan Summary ===")
 	fmt.Printf("Total devices discovered: %d\n", len(devices))
-	
+
 	var identifiedCount, vulnerableCount, defaultCredsCount int
-	
+
 	// Count device types
 	deviceTypes := make(map[string]int)
-	
+
 	for _, device := range devices {
 		if device.Vendor != "" || device.Model != "" {
 			identifiedCount++
 		}
-		
+
 		if len(device.Vulnerabilities) > 0 {
 			vulnerableCount++
 		}
-		
+
 		if len(device.DefaultCredentials) > 0 {
 			defaultCredsCount++
 		}
-		
+
 		// Categorize device types
 		for _, tag := range device.Tags {
 			deviceTypes[tag]++
 		}
 	}
-	
+
 	fmt.Printf("Identified devices: %d\n", identifiedCount)
 	fmt.Printf("Devices with vulnerabilities: %d\n", vulnerableCount)
 	fmt.Printf("Devices with default credentials: %d\n", defaultCredsCount)
-	
+
 	// List vulnerable devices
 	if vulnerableCount > 0 {
 		fmt.Println("\nVulnerable devices:")
 		for _, device := range devices {
 			if len(device.Vulnerabilities) > 0 {
-				fmt.Printf("  - %s (%s %s): %d vulnerabilities\n", 
+				fmt.Printf("  - %s (%s %s): %d vulnerabilities\n",
 					device.IP, device.Vendor, device.Model, len(device.Vulnerabilities))
 			}
 		}
 	}
-	
+
 	// List devices with default credentials
 	if defaultCredsCount > 0 {
 		fmt.Println("\nDevices with default credentials:")
 		for _, device := range devices {
 			if len(device.DefaultCredentials) > 0 {
-				fmt.Printf("  - %s (%s %s): %d credential sets\n", 
+				fmt.Printf("  - %s (%s %s): %d credential sets\n",
 					device.IP, device.Vendor, device.Model, len(device.DefaultCredentials))
 			}
 		}

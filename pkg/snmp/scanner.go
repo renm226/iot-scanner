@@ -7,7 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/renm226/iot-scanner/pkg/models"
+	"iot-scanner/pkg/models"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,20 +31,20 @@ type SNMPVersion int
 
 // SNMP versions
 const (
-	SNMPv1 SNMPVersion = 0
+	SNMPv1  SNMPVersion = 0
 	SNMPv2c SNMPVersion = 1
-	SNMPv3 SNMPVersion = 3
+	SNMPv3  SNMPVersion = 3
 )
 
 // SNMPCredential defines authentication for SNMP
 type SNMPCredential struct {
 	Version   SNMPVersion
-	Community string      // For v1/v2c
-	Username  string      // For v3
-	AuthPass  string      // For v3
-	PrivPass  string      // For v3
-	AuthProto string      // For v3 (MD5, SHA)
-	PrivProto string      // For v3 (DES, AES)
+	Community string // For v1/v2c
+	Username  string // For v3
+	AuthPass  string // For v3
+	PrivPass  string // For v3
+	AuthProto string // For v3 (MD5, SHA)
+	PrivProto string // For v3 (DES, AES)
 }
 
 // SNMPResult represents the result of an SNMP scan
@@ -51,10 +52,10 @@ type SNMPResult struct {
 	IP         string
 	Port       int
 	Version    SNMPVersion
-	SysInfo    map[string]string // System information
+	SysInfo    map[string]string   // System information
 	Interfaces []map[string]string // Network interfaces
 	Services   []map[string]string // Running services
-	OtherInfo  map[string]string // Other collected information
+	OtherInfo  map[string]string   // Other collected information
 }
 
 // SNMPScanner performs SNMP scanning
@@ -70,7 +71,7 @@ func NewSNMPScanner(timeout time.Duration, retries int, logger *logrus.Logger) *
 	if logger == nil {
 		logger = logrus.New()
 	}
-	
+
 	// Default credentials (commonly used community strings)
 	defaultCreds := []SNMPCredential{
 		{Version: SNMPv2c, Community: "public"},
@@ -82,7 +83,7 @@ func NewSNMPScanner(timeout time.Duration, retries int, logger *logrus.Logger) *
 		{Version: SNMPv2c, Community: "cisco"},
 		{Version: SNMPv2c, Community: "admin"},
 	}
-	
+
 	return &SNMPScanner{
 		timeout:     timeout,
 		retries:     retries,
@@ -106,11 +107,11 @@ func (s *SNMPScanner) ScanDevice(device *models.Device) (*SNMPResult, error) {
 			break
 		}
 	}
-	
+
 	if snmpPort == 0 {
 		return nil, fmt.Errorf("no SNMP ports (161, 162) open on device %s", device.IP)
 	}
-	
+
 	// Try each credential
 	for _, cred := range s.credentials {
 		result, err := s.trySNMP(device.IP, snmpPort, cred)
@@ -119,7 +120,7 @@ func (s *SNMPScanner) ScanDevice(device *models.Device) (*SNMPResult, error) {
 			return result, nil
 		}
 	}
-	
+
 	return nil, fmt.Errorf("SNMP scan failed on %s: no valid credentials", device.IP)
 }
 
@@ -128,12 +129,12 @@ func (s *SNMPScanner) ScanNetwork(devices []models.Device) map[string]*SNMPResul
 	results := make(map[string]*SNMPResult)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	
+
 	for i := range devices {
 		wg.Add(1)
 		go func(device *models.Device) {
 			defer wg.Done()
-			
+
 			result, err := s.ScanDevice(device)
 			if err != nil {
 				if s.logger.Level >= logrus.DebugLevel {
@@ -141,13 +142,13 @@ func (s *SNMPScanner) ScanNetwork(devices []models.Device) map[string]*SNMPResul
 				}
 				return
 			}
-			
+
 			mu.Lock()
 			results[device.IP] = result
 			mu.Unlock()
 		}(&devices[i])
 	}
-	
+
 	wg.Wait()
 	return results
 }
@@ -157,26 +158,26 @@ func (s *SNMPScanner) EnhanceDeviceInfo(device *models.Device, result *SNMPResul
 	if result == nil {
 		return
 	}
-	
+
 	// Update device info from SNMP
 	if sysName, ok := result.SysInfo["sysName"]; ok && sysName != "" {
 		device.Hostname = sysName
 	}
-	
+
 	if sysDescr, ok := result.SysInfo["sysDescr"]; ok && sysDescr != "" {
 		// Try to extract vendor and model from sysDescr
 		extractVendorModel(device, sysDescr)
-		
+
 		// Try to extract firmware version
 		extractFirmwareVersion(device, sysDescr)
 	}
-	
+
 	// Add SNMP data to device services
 	if device.Services == nil {
 		device.Services = make(map[string]string)
 	}
 	device.Services["SNMP"] = fmt.Sprintf("SNMPv%d", result.Version)
-	
+
 	// Store full SNMP result in tags if available
 	if device.Tags == nil {
 		device.Tags = []string{"snmp-enabled"}
@@ -191,12 +192,12 @@ func (s *SNMPScanner) EnhanceDeviceInfo(device *models.Device, result *SNMPResul
 func (s *SNMPScanner) trySNMP(ip string, port int, cred SNMPCredential) (*SNMPResult, error) {
 	// Simulate SNMP communication - in a real implementation, use a proper SNMP library
 	// This is just a placeholder to show how the function would work
-	
+
 	// In a real implementation, we would:
 	// 1. Create an SNMP client
 	// 2. Try to connect with the given credentials
 	// 3. If successful, collect system information using GetBulk or Walk operations
-	
+
 	// For the purpose of this example, let's simulate a small percentage of successful connections
 	// This is just for demonstration; in a real scanner this would be real SNMP communication
 	if ip[len(ip)-1] != '1' && cred.Community == "public" {
@@ -214,17 +215,17 @@ func (s *SNMPScanner) trySNMP(ip string, port int, cred SNMPCredential) (*SNMPRe
 			},
 			Interfaces: []map[string]string{
 				{
-					"ifIndex":      "1",
-					"ifDescr":      "eth0",
-					"ifType":       "ethernet-csmacd(6)",
+					"ifIndex":       "1",
+					"ifDescr":       "eth0",
+					"ifType":        "ethernet-csmacd(6)",
 					"ifPhysAddress": fmt.Sprintf("00:11:22:33:44:%s", ip[len(ip)-2:]),
-					"ifSpeed":      "100000000",
+					"ifSpeed":       "100000000",
 				},
 			},
 			Services: []map[string]string{
 				{
-					"serviceName": "HTTP",
-					"servicePort": "80",
+					"serviceName":   "HTTP",
+					"servicePort":   "80",
 					"serviceStatus": "running",
 				},
 			},
@@ -232,13 +233,13 @@ func (s *SNMPScanner) trySNMP(ip string, port int, cred SNMPCredential) (*SNMPRe
 				"deviceType": "IoT Device",
 			},
 		}
-		
+
 		// Sleep to simulate network latency
 		time.Sleep(time.Duration(50+s.retries*20) * time.Millisecond)
-		
+
 		return result, nil
 	}
-	
+
 	// Simulate failure for most cases
 	time.Sleep(time.Duration(50+s.retries*10) * time.Millisecond)
 	return nil, fmt.Errorf("authentication failed or timeout")
@@ -259,33 +260,33 @@ func extractVendorModel(device *models.Device, sysDescr string) {
 	// This is a simplified implementation
 	// In a real-world application, you would have a more comprehensive database
 	// of patterns to match against sysDescr strings
-	
+
 	sysDescr = strings.ToLower(sysDescr)
-	
+
 	// Check for common vendors
 	vendors := map[string]string{
-		"cisco":      "Cisco",
-		"juniper":    "Juniper",
-		"huawei":     "Huawei",
-		"tp-link":    "TP-Link",
-		"d-link":     "D-Link",
-		"netgear":    "NETGEAR",
-		"hikvision":  "Hikvision",
-		"dahua":      "Dahua",
-		"axis":       "Axis",
-		"honeywell":  "Honeywell",
-		"bosch":      "Bosch",
-		"samsung":    "Samsung",
-		"sony":       "Sony",
-		"panasonic":  "Panasonic",
-		"ubiquiti":   "Ubiquiti",
-		"mikrotik":   "MikroTik",
-		"aruba":      "Aruba",
-		"fortinet":   "Fortinet",
-		"sonicwall":  "SonicWall",
+		"cisco":     "Cisco",
+		"juniper":   "Juniper",
+		"huawei":    "Huawei",
+		"tp-link":   "TP-Link",
+		"d-link":    "D-Link",
+		"netgear":   "NETGEAR",
+		"hikvision": "Hikvision",
+		"dahua":     "Dahua",
+		"axis":      "Axis",
+		"honeywell": "Honeywell",
+		"bosch":     "Bosch",
+		"samsung":   "Samsung",
+		"sony":      "Sony",
+		"panasonic": "Panasonic",
+		"ubiquiti":  "Ubiquiti",
+		"mikrotik":  "MikroTik",
+		"aruba":     "Aruba",
+		"fortinet":  "Fortinet",
+		"sonicwall": "SonicWall",
 		"palo alto": "Palo Alto",
 	}
-	
+
 	// Try to identify vendor
 	for vendorKey, vendorName := range vendors {
 		if strings.Contains(sysDescr, vendorKey) && device.Vendor == "" {
@@ -293,7 +294,7 @@ func extractVendorModel(device *models.Device, sysDescr string) {
 			break
 		}
 	}
-	
+
 	// Try to extract model number
 	// This is a simplified approach; in reality, you'd need
 	// vendor-specific patterns to extract model information
@@ -308,7 +309,7 @@ func extractVendorModel(device *models.Device, sysDescr string) {
 			"platform",
 			"series",
 		}
-		
+
 		for range modelPatterns {
 			// In a real implementation, use regex to extract model information
 			// For simplicity, just checking if the pattern prefix exists
@@ -335,10 +336,10 @@ func extractFirmwareVersion(device *models.Device, sysDescr string) {
 	if device.FirmwareVersion != "" {
 		return
 	}
-	
+
 	// In a real implementation, use regex patterns to find version numbers
 	// This is a simplified version that just checks common prefixes
-	
+
 	// In a real implementation, use regex to extract version information
 	// For simplicity, look for simple patterns
 	for _, part := range strings.Split(sysDescr, " ") {
@@ -352,7 +353,7 @@ func extractFirmwareVersion(device *models.Device, sysDescr string) {
 				}
 			}
 		}
-		
+
 		// Check for pattern like v1.2.3
 		if len(part) > 1 && part[0] == 'v' && isVersionFormat(part[1:]) {
 			device.FirmwareVersion = part[1:]
@@ -367,12 +368,12 @@ func isVersionFormat(s string) bool {
 	if len(parts) < 2 || len(parts) > 4 {
 		return false
 	}
-	
+
 	for _, part := range parts {
 		if _, err := strconv.Atoi(part); err != nil {
 			return false
 		}
 	}
-	
+
 	return true
 }
