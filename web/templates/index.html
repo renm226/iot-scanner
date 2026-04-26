@@ -1,110 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IoT Device Security Scanner</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Security Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                <strong class="has-text-primary">IoT Scanner</strong>
-            </a>
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-        <div id="navMenu" class="navbar-menu">
-            <div class="navbar-start">
-                <a class="navbar-item" href="/">Home</a>
-                <a class="navbar-item" href="/dashboard">Dashboard</a>
-            </div>
-        </div>
-    </nav>
 
-    <section class="hero is-primary is-fullheight-with-navbar">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-vcentered">
-                    <div class="column is-6">
-                        <h1 class="title is-1">
-                            IoT Device Security Scanner
-                        </h1>
-                        <h2 class="subtitle is-4">
-                            Identify, Fingerprint, and Secure Your IoT Network
-                        </h2>
-                        <div class="buttons">
-                            <a href="/dashboard" class="button is-large is-dark">
-                                <span class="icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </span>
-                                <span>Launch Dashboard</span>
-                            </a>
-                            <a href="https://github.com/maheshdj/iot-scanner" class="button is-large is-light is-outlined">
-                                <span class="icon">
-                                    <i class="fab fa-github"></i>
-                                </span>
-                                <span>View on GitHub</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                        <div class="box p-6">
-                            <h3 class="title is-4">Key Features</h3>
-                            <div class="content">
-                                <ul class="features-list">
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-search"></i></span>
-                                        <span>Advanced network discovery using both passive and active techniques</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-fingerprint"></i></span>
-                                        <span>IoT device fingerprinting and profile creation</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-shield-alt"></i></span>
-                                        <span>Vulnerability scanning with CVE matching</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-key"></i></span>
-                                        <span>Default credential checking across multiple protocols</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-network-wired"></i></span>
-                                        <span>Real-time network traffic analysis for IoT protocols</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-bug"></i></span>
-                                        <span>Exploit testing and security validation</span>
-                                    </li>
-                                    <li>
-                                        <span class="icon has-text-primary"><i class="fas fa-tachometer-alt"></i></span>
-                                        <span>Interactive dashboard with real-time updates</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Navigation -->
+  <nav class="landing-nav">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon"><i class="fas fa-shield-halved"></i></div>
+      <span class="nav-brand-text">IoT Security Scanner</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/assistant" class="nav-link">AI Assistant</a>
+    </div>
+    <a href="/dashboard" style="display:inline-flex;align-items:center;gap:7px;padding:8px 18px;background:var(--accent);color:#080d16;border-radius:var(--radius-sm);font-size:13px;font-weight:700;text-decoration:none;transition:all 0.2s;margin-left:12px;">
+      <i class="fas fa-play"></i> Launch Dashboard
+    </a>
+  </nav>
 
-    <footer class="footer has-background-dark has-text-white">
-        <div class="content has-text-centered">
-            <p>
-                <strong class="has-text-white">IoT Device Security Scanner</strong> by Mahesh Dj.<br>
-                The source code is licensed under the <a href="https://opensource.org/licenses/MIT" class="has-text-primary">MIT license</a>.
-            </p>
-        </div>
-    </footer>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
 
-    <script src="/static/js/main.js"></script>
+      <!-- Left: copy -->
+      <div>
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          CMPS 485 · Computer Security · Spring 2026
+        </div>
+
+        <h1 class="hero-title">
+          Real-Time<br><span class="accent">IoT Network</span><br>Security Scanner
+        </h1>
+
+        <p class="hero-subtitle">
+          Discover, fingerprint, and assess every IoT device on your local network
+          from a single host — no agents required. Combines active scanning, passive
+          monitoring, and AI-powered remediation advice.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/dashboard" class="btn-hero-primary">
+            <i class="fas fa-chart-network"></i> Open Dashboard
+          </a>
+          <a href="/assistant" class="btn-hero-ghost">
+            <i class="fas fa-robot"></i> AI Assistant
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">90%</div>
+            <div class="stat-label">Detection Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3.2s</div>
+            <div class="stat-label">Mean Latency</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">2,847</div>
+            <div class="stat-label">Credential Pairs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">0%</div>
+            <div class="stat-label">False Positives</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: features panel -->
+      <div>
+        <div class="features-panel">
+          <div class="features-panel-title"><i class="fas fa-layer-group" style="margin-right:8px;color:var(--accent)"></i>Scanner Capabilities</div>
+          <ul class="features-list">
+            <li>
+              <div class="feature-icon accent"><i class="fas fa-radar"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">Active Network Discovery</div>
+                <div class="ft-desc">ARP sweep, ICMP echo, and TCP SYN scanning across any CIDR range</div>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon blue"><i class="fas fa-eye"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">Passive Packet Monitoring</div>
+                <div class="ft-desc">libpcap capture of ARP, DHCP, and DNS for continuous detection</div>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon teal"><i class="fas fa-fingerprint"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">Device Fingerprinting</div>
+                <div class="ft-desc">MAC OUI, banner grabbing, SNMP OID walks, DHCP vendor class</div>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon red"><i class="fas fa-shield-exclamation"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">Vulnerability Assessment</div>
+                <div class="ft-desc">Default credential testing, SNMP misconfiguration, NIST NVD CVE matching</div>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon amber"><i class="fas fa-robot"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">AI Security Assistant</div>
+                <div class="ft-desc">Claude-powered plain-language remediation aligned to NIST SP 800-213</div>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon accent"><i class="fas fa-chart-network"></i></div>
+              <div class="feature-text">
+                <div class="ft-title">Real-Time Web Dashboard</div>
+                <div class="ft-desc">Live device map, topology graph, WebSocket alert streaming</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Metrics Strip -->
+  <div class="metrics-strip">
+    <div class="metrics-inner">
+      <div>
+        <div class="metric-value">47.3s</div>
+        <div class="metric-label">Full Scan · 17 Devices</div>
+      </div>
+      <div>
+        <div class="metric-value">88.9%</div>
+        <div class="metric-label">Credential Detection</div>
+      </div>
+      <div>
+        <div class="metric-value">100%</div>
+        <div class="metric-label">SNMP Coverage</div>
+      </div>
+      <div>
+        <div class="metric-value">82.4%</div>
+        <div class="metric-label">Model Identification</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-brand">IoT Device Security Scanner</div>
+    <div class="footer-meta">
+      CMPS 485 Computer Security · Spring 2026 ·
+      Hissa Al-Qahtani &nbsp;·&nbsp; Noora Al-Naimi &nbsp;·&nbsp; Noora Al-Yafei
+    </div>
+  </footer>
+
 </body>
 </html>
