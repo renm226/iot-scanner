@@ -2,7 +2,8 @@
 The fastest way to explore all features is simulation mode, which generates synthetic IoT devices with realistic vulnerabilities, open ports, and fingerprints no network or root access needed. Command go run ./cmd/scanner/ -test -dashboard -port 8080
  
 Figure 1: simulated results
-Resultimages\image.png 
+
+![Simulated results](Resultimages/image.png)
 
  IoT Device Security Scanner
 
