@@ -38,7 +38,6 @@ A real-time, agent-free network security tool written in Go that discovers, fing
 ## Installation
 
 ```bash
-git clone <repository-url>
 cd IoT-device-Scanner
 
 go mod download
@@ -56,7 +55,7 @@ mkdir -p data data/fingerprint data/firmware data/reports data/logs reports
 
 ## Quick Start
 
-The fastest way to explore all features is simulation mode, which generates synthetic IoT devices with realistic vulnerabilities, open ports, and fingerprints — no network or root access needed.
+The fastest way to explore all features is simulation mode, which generates synthetic IoT devices with realistic vulnerabilities, open ports, and fingerprints  no network or root access needed.
 
 ```bash
 go run ./cmd/scanner/ -test -dashboard -port 8080
@@ -193,17 +192,7 @@ sudo go run ./cmd/scanner/ \
 
 ---
 
-## Scanning Modes
 
-| Mode | Command | Root Required | Network Required | Description |
-|---|---|---|---|---|
-| Simulation | `-test -dashboard` | No | No | Full dashboard with synthetic devices |
-| Basic | `scan --range ...` | Yes | Yes | ARP discovery + port scan |
-| Full | `scan --range ... --full` | Yes | Yes | + Credential testing + CVE matching |
-| Enhanced | `scan --range ... --full --enhanced` | Yes | Yes | + SNMP enumeration + MAC OUI + topology |
-| Passive | `-pcap <interface>` | Yes | Yes | Continuous background ARP monitoring |
-
----
 
 ## Configuration File
 
@@ -255,50 +244,6 @@ Accessible at **http://localhost:8080** when `-dashboard` or `--dashboard` is se
 
 ---
 
-## Project Structure
-
-```
-IoT-device-Scanner/
-├── cmd/
-│   ├── main.go                  # Primary CLI (subcommand-based)
-│   ├── main/main.go             # Alternate CLI (flag-based)
-│   └── scanner/
-│       ├── main.go              # Scanner CLI with simulation mode
-│       └── main_advanced.go     # Advanced scanner helpers
-├── integrated_scanner.go        # Root-level scanner with CVE feed and export
-├── pkg/
-│   ├── api/
-│   │   ├── assistant.go         # AI assistant chat endpoint
-│   │   ├── dashboard.go         # Web dashboard and WebSocket server
-│   │   └── server.go            # HTTP server setup
-│   ├── config/config.go         # Config struct and defaults
-│   ├── credentials/             # Default credential database and tester
-│   ├── discovery/
-│   │   ├── discovery.go         # ARP sweep, ICMP, TCP SYN scanner
-│   │   ├── advanced_discovery.go
-│   │   └── scanner_interface.go
-│   ├── exploit/exploit.go       # CVE exploit testing
-│   ├── fingerprint/
-│   │   ├── fingerprint.go       # Banner grabbing, SNMP, DHCP fingerprinting
-│   │   └── mac_vendor.go        # OUI-to-manufacturer database
-│   ├── firmware/analyzer.go     # Firmware binary analysis
-│   ├── integration/
-│   │   ├── enhanced_scanner.go  # SNMP, MAC, and topology orchestration
-│   │   └── test_scanner.go      # Simulation scanner
-│   ├── models/
-│   │   ├── device.go            # Device, Vulnerability, Credential types
-│   │   └── device_methods.go
-│   ├── netmap/topology.go       # Network topology graph
-│   ├── pcap/packet_analyzer.go  # libpcap passive packet capture
-│   ├── snmp/scanner.go          # SNMP community string testing and OID walk
-│   └── vulnerability/           # NIST NVD CVE lookup and CVSS scoring
-├── data/                        # Runtime data (OUI DB, fingerprints, CVE cache)
-├── reports/                     # Exported scan reports
-├── go.mod
-└── go.sum
-```
-
----
 
 ## Default Scanned Ports
 
@@ -343,7 +288,3 @@ See `go.mod` for the full dependency list.
 - **Legal notice** — Active scanning and credential testing are only lawful on networks for which you hold explicit authorization. Unauthorized use may violate applicable computer fraud legislation.
 
 ---
-
-## License
-
-See `LICENSE` for terms.
