@@ -1,0 +1,90 @@
+[
+  {
+    "vendor": "Hikvision",
+    "model": "IP Camera",
+    "ports": {
+      "554": "RTSP",
+      "80": "Hikvision"
+    },
+    "headers": {
+      "Server": "Hikvision.*"
+    },
+    "banner_regex": ""
+  },
+  {
+    "vendor": "Dahua",
+    "model": "IP Camera",
+    "ports": {
+      "554": "RTSP",
+      "80": "Dahua|wificam"
+    },
+    "headers": {
+      "Server": "Dahua.*"
+    },
+    "banner_regex": ""
+  },
+  {
+    "vendor": "TP-Link",
+    "model": "Router",
+    "ports": null,
+    "headers": {
+      "Server": "TP-LINK.*"
+    },
+    "banner_regex": "TP-LINK|tplink"
+  },
+  {
+    "vendor": "D-Link",
+    "model": "Router",
+    "ports": null,
+    "headers": {
+      "Server": "D-Link.*"
+    },
+    "banner_regex": "D-Link|dlink"
+  },
+  {
+    "vendor": "Netgear",
+    "model": "Router",
+    "ports": null,
+    "headers": {
+      "Server": "NETGEAR.*"
+    },
+    "banner_regex": "NETGEAR|netgear"
+  },
+  {
+    "vendor": "Philips Hue",
+    "model": "Bridge",
+    "ports": null,
+    "headers": {
+      "Server": "Philips hue.*"
+    },
+    "banner_regex": "hue"
+  },
+  {
+    "vendor": "Nest",
+    "model": "Thermostat",
+    "ports": null,
+    "headers": null,
+    "banner_regex": "nest"
+  },
+  {
+    "vendor": "Amazon",
+    "model": "Echo",
+    "ports": null,
+    "headers": null,
+    "banner_regex": "Amazon|Echo|Alexa"
+  },
+  {
+    "vendor": "Google",
+    "model": "Home",
+    "ports": null,
+    "headers": null,
+    "banner_regex": "Google Home|Google Nest"
+  },
+  {
+    "vendor": "Sonos",
+    "model": "Speaker",
+    "ports": null,
+    "headers": null,
+    "banner_regex": "Sonos"
+  }
+]

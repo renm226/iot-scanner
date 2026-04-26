@@ -1,0 +1,83 @@
+{
+  "CVE-2019-9483": {
+    "id": "CVE-2019-9483",
+    "description": "Information disclosure vulnerability in Ring doorbells exposes WiFi credentials during setup.",
+    "severity": "High",
+    "published": "2019-07-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z",
+    "affected_products": [
+      "Ring Video Doorbell Pro"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-9483"
+    ]
+  },
+  "CVE-2020-25506": {
+    "id": "CVE-2020-25506",
+    "description": "A vulnerability in TOTOLINK routers allows remote attackers to execute arbitrary OS commands via shell metacharacters.",
+    "severity": "Critical",
+    "published": "2020-09-14T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z",
+    "affected_products": [
+      "TOTOLINK A3000RU",
+      "TOTOLINK N600R",
+      "TOTOLINK A850R",
+      "TOTOLINK A950RG"
+    ],
+    "exploits": [
+      {
+        "name": "TOTOLINK Remote Code Execution",
+        "description": "Exploit for remote command execution on TOTOLINK routers",
+        "type": "Remote Code Execution"
+      }
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-25506"
+    ]
+  },
+  "CVE-2021-36260": {
+    "id": "CVE-2021-36260",
+    "description": "Command injection vulnerability in the web server of Hikvision IP cameras and DVRs allows an attacker to gain full control over devices without authentication.",
+    "severity": "Critical",
+    "published": "2021-09-19T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z",
+    "affected_products": [
+      "Hikvision IP cameras",
+      "Hikvision DVRs"
+    ],
+    "exploits": [
+      {
+        "name": "Exploit for CVE-2021-36260",
+        "description": "Python script to exploit command injection in Hikvision devices",
+        "type": "Proof of Concept",
+        "url": "https://github.com/threatmonitor/Hikvision-CVE-2021-36260"
+      }
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-36260",
+      "https://www.hikvision.com/en/support/cybersecurity/security-advisories/security-notification-command-injection-vulnerability-in-some-hikvision-products/"
+    ]
+  },
+  "CVE-2025-0517": {
+    "id": "CVE-2025-0517",
+    "description": "Recently discovered vulnerability affecting IoT devices allowing remote code execution.",
+    "severity": "Critical",
+    "published": "2025-05-17T00:05:57.128411118+05:30",
+    "updated": "2025-05-17T00:05:57.128411118+05:30",
+    "affected_products": [
+      "Multiple IoT Devices",
+      "Smart Home Systems"
+    ],
+    "exploits": [
+      {
+        "name": "New IoT Exploit",
+        "description": "Zero-day exploit targeting vulnerable IoT devices",
+        "type": "Remote Code Execution",
+        "date": "2025-05-17T00:05:57+05:30"
+      }
+    ],
+    "references": [
+      "https://example.com/cve-database"
+    ]
+  }
+}

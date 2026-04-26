@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Device Security Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <strong class="has-text-primary">IoT Scanner</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navMenu" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item" href="/dashboard">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero is-primary is-fullheight-with-navbar">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column is-6">
+                        <h1 class="title is-1">
+                            IoT Device Security Scanner
+                        </h1>
+                        <h2 class="subtitle is-4">
+                            Identify, Fingerprint, and Secure Your IoT Network
+                        </h2>
+                        <div class="buttons">
+                            <a href="/dashboard" class="button is-large is-dark">
+                                <span class="icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <span>Launch Dashboard</span>
+                            </a>
+                            <a href="https://github.com/maheshdj/iot-scanner" class="button is-large is-light is-outlined">
+                                <span class="icon">
+                                    <i class="fab fa-github"></i>
+                                </span>
+                                <span>View on GitHub</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="column is-6">
+                        <div class="box p-6">
+                            <h3 class="title is-4">Key Features</h3>
+                            <div class="content">
+                                <ul class="features-list">
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-search"></i></span>
+                                        <span>Advanced network discovery using both passive and active techniques</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-fingerprint"></i></span>
+                                        <span>IoT device fingerprinting and profile creation</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-shield-alt"></i></span>
+                                        <span>Vulnerability scanning with CVE matching</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-key"></i></span>
+                                        <span>Default credential checking across multiple protocols</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-network-wired"></i></span>
+                                        <span>Real-time network traffic analysis for IoT protocols</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-bug"></i></span>
+                                        <span>Exploit testing and security validation</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon has-text-primary"><i class="fas fa-tachometer-alt"></i></span>
+                                        <span>Interactive dashboard with real-time updates</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer has-background-dark has-text-white">
+        <div class="content has-text-centered">
+            <p>
+                <strong class="has-text-white">IoT Device Security Scanner</strong> by Mahesh Dj.<br>
+                The source code is licensed under the <a href="https://opensource.org/licenses/MIT" class="has-text-primary">MIT license</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

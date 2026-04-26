@@ -1,0 +1,143 @@
+[
+  {
+    "IP": "192.168.1.100",
+    "MAC": "aa:bb:cc:11:22:33",
+    "Hostname": "hikvision-cam",
+    "Vendor": "Hikvision",
+    "Model": "DS-2CD2032-I",
+    "FirmwareVersion": "V5.4.5",
+    "OpenPorts": {
+      "443": "HTTPS",
+      "554": "RTSP",
+      "80": "HTTP"
+    },
+    "OperatingSystem": "Embedded Linux",
+    "Vulnerabilities": null,
+    "DefaultCredentials": null,
+    "Banners": {
+      "80": "Hikvision Web Server"
+    },
+    "LastSeen": "2025-05-17T02:17:19.802325799+05:30",
+    "Services": {
+      "HTTP": "Web Interface",
+      "RTSP": "Video Stream"
+    },
+    "Tags": null,
+    "MACAddress": ""
+  },
+  {
+    "IP": "192.168.1.1",
+    "MAC": "aa:bb:cc:00:11:22",
+    "Hostname": "router",
+    "Vendor": "TP-Link",
+    "Model": "Archer C7",
+    "FirmwareVersion": "3.15.3",
+    "OpenPorts": {
+      "443": "HTTPS",
+      "53": "DNS",
+      "80": "HTTP"
+    },
+    "OperatingSystem": "DD-WRT",
+    "Vulnerabilities": null,
+    "DefaultCredentials": null,
+    "Banners": {
+      "80": "DD-WRT Router"
+    },
+    "LastSeen": "2025-05-17T02:17:19.802325799+05:30",
+    "Services": {
+      "DNS": "Domain Name Service",
+      "HTTP": "Web Admin"
+    },
+    "Tags": null,
+    "MACAddress": ""
+  },
+  {
+    "IP": "192.168.1.101",
+    "MAC": "aa:bb:cc:33:44:55",
+    "Hostname": "JBL-Speaker",
+    "Vendor": "JBL",
+    "Model": "Charge 4",
+    "FirmwareVersion": "1.8.0",
+    "OpenPorts": {
+      "8080": "HTTP Control"
+    },
+    "OperatingSystem": "Custom Firmware",
+    "Vulnerabilities": null,
+    "DefaultCredentials": null,
+    "Banners": null,
+    "LastSeen": "2025-05-17T02:17:19.802325799+05:30",
+    "Services": {
+      "bluetooth": "A2DP Audio"
+    },
+    "Tags": null,
+    "MACAddress": ""
+  },
+  {
+    "IP": "192.168.1.102",
+    "MAC": "aa:bb:cc:66:77:88",
+    "Hostname": "SmartThings-Hub",
+    "Vendor": "Samsung",
+    "Model": "SmartThings Hub v3",
+    "FirmwareVersion": "0.45.2",
+    "OpenPorts": {
+      "443": "HTTPS",
+      "80": "HTTP",
+      "8080": "HTTP API"
+    },
+    "OperatingSystem": "Embedded OS",
+    "Vulnerabilities": null,
+    "DefaultCredentials": null,
+    "Banners": {
+      "80": "SmartThings Hub"
+    },
+    "LastSeen": "2025-05-17T02:17:19.802325799+05:30",
+    "Services": {
+      "HTTP": "Web Interface",
+      "HTTPS": "Secure API"
+    },
+    "Tags": null,
+    "MACAddress": ""
+  },
+  {
+    "IP": "192.168.1.103",
+    "MAC": "aa:bb:cc:99:00:11",
+    "Hostname": "dahua-cam",
+    "Vendor": "Dahua",
+    "Model": "DH-IPC-HDW1431S",
+    "FirmwareVersion": "2.400.0000000.18",
+    "OpenPorts": {
+      "443": "HTTPS",
+      "554": "RTSP",
+      "80": "HTTP"
+    },
+    "OperatingSystem": "Embedded Linux",
+    "Vulnerabilities": [
+      {
+        "ID": "CVE-2020-25506",
+        "CVE": "",
+        "Name": "Authentication Bypass",
+        "Title": "",
+        "Description": "Authentication bypass vulnerability in Dahua web interface",
+        "Severity": "Critical",
+        "CVSS": 9.8,
+        "References": [
+          "https://nvd.nist.gov/vuln/detail/CVE-2020-25506"
+        ],
+        "Remediation": "Update firmware to latest version",
+        "Exploitable": false,
+        "ExploitRef": ""
+      }
+    ],
+    "DefaultCredentials": null,
+    "Banners": {
+      "80": "Dahua Web Server"
+    },
+    "LastSeen": "2025-05-17T02:17:19.802325799+05:30",
+    "Services": {
+      "HTTP": "Web Interface",
+      "RTSP": "Video Stream"
+    },
+    "Tags": null,
+    "MACAddress": ""
+  }
+]

@@ -1,0 +1,38 @@
+/* Main Site Styles */
+.features-list {
+    list-style-type: none !important;
+}
+
+.features-list li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.features-list li .icon {
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.navbar-item strong {
+    letter-spacing: 1px;
+}
+
+footer a {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .hero-body {
+        padding: 2rem 1rem;
+    }
+    
+    .title.is-1 {
+        font-size: 2rem !important;
+    }
+    
+    .subtitle.is-4 {
+        font-size: 1.25rem !important;
+    }
+}

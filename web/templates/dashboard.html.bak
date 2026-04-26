@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Scanner Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <strong class="has-text-primary">IoT Scanner</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navMenu" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item is-active" href="/dashboard">Dashboard</a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <button id="startScanBtn" class="button is-primary">
+                            <span class="icon">
+                                <i class="fas fa-play"></i>
+                            </span>
+                            <span>Start Scan</span>
+                        </button>
+                        <a href="/assistant" class="button is-info" title="AI Security Assistant">
+                            <span class="icon">
+                                <i class="fas fa-robot"></i>
+                            </span>
+                            <span>AI Assistant</span>
+                        </a>
+                        <button id="exportBtn" class="button is-light">
+                            <span class="icon">
+                                <i class="fas fa-download"></i>
+                            </span>
+                            <span>Export</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <aside class="menu">
+                <p class="menu-label">
+                    Scanner
+                </p>
+                <ul class="menu-list">
+                    <li><a id="nav-overview" class="is-active">Overview</a></li>
+                    <li><a id="nav-devices">Devices</a></li>
+                    <li><a id="nav-vulnerabilities">Vulnerabilities</a></li>
+                    <li><a id="nav-scan-history">Scan History</a></li>
+                    <li><a id="nav-traffic">Traffic Analysis</a></li>
+                    <li><a id="nav-exploits">Exploit Tests</a></li>
+                    <li><a id="nav-logs">Activity Logs</a></li>
+                </ul>
+                <p class="menu-label">
+                    Settings
+                </p>
+                <ul class="menu-list">
+                    <li><a id="nav-settings">Scan Settings</a></li>
+                    <li><a id="nav-reports">Reports</a></li>
+                </ul>
+            </aside>
+        </div>
+
+        <div class="main-content">
+            <div id="statusBar" class="notification is-info">
+                <span class="icon">
+                    <i class="fas fa-info-circle"></i>
+                </span>
+                <span>Scanner is idle. Click "Start Scan" to begin scanning your network.</span>
+            </div>
+
+            <!-- Overview Section -->
+            <section id="section-overview" class="dashboard-section">
+                <div class="dashboard-header">
+                    <h1 class="title">Dashboard Overview</h1>
+                    <p class="subtitle">Network security at a glance</p>
+                </div>
+
+                <div class="columns is-multiline">
+                    <div class="column is-3">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </span>
+                                <span>Total Devices</span>
+                            </div>
+                            <div class="stat-value" id="total-devices">0</div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="icon">
+                                    <i class="fas fa-fingerprint"></i>
+                                </span>
+                                <span>Identified</span>
+                            </div>
+                            <div class="stat-value" id="identified-devices">0</div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="stat-card is-danger">
+                            <div class="stat-header">
+                                <span class="icon">
+                                    <i class="fas fa-bug"></i>
+                                </span>
+                                <span>Vulnerable</span>
+                            </div>
+                            <div class="stat-value" id="vulnerable-devices">0</div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="stat-card is-warning">
+                            <div class="stat-header">
+                                <span class="icon">
+                                    <i class="fas fa-key"></i>
+                                </span>
+                                <span>Default Creds</span>
+                            </div>
+                            <div class="stat-value" id="default-creds-devices">0</div>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="chart-container">
+                            <h2 class="subtitle">Device Types</h2>
+                            <canvas id="deviceTypesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="chart-container">
+                            <h2 class="subtitle">Vulnerability Severity</h2>
+                            <canvas id="vulnerabilitySeverityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="column is-12">
+                        <div class="table-container">
+                            <h2 class="subtitle">Critical Security Issues</h2>
+                            <table class="table is-fullwidth" id="critical-issues-table">
+                                <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>IP Address</th>
+                                        <th>Issue</th>
+                                        <th>Severity</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- This will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Devices Section -->
+            <section id="section-devices" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Discovered Devices</h1>
+                    <p class="subtitle">Complete inventory of network devices</p>
+                </div>
+
+                <div class="filters">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input id="device-search" class="input" type="text" placeholder="Search devices...">
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary">
+                                <span class="icon">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <div class="select">
+                                <select id="device-filter">
+                                    <option value="all">All Devices</option>
+                                    <option value="vulnerable">Vulnerable Only</option>
+                                    <option value="default-creds">With Default Credentials</option>
+                                    <option value="camera">Cameras</option>
+                                    <option value="router">Routers</option>
+                                    <option value="unidentified">Unidentified</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="devices-grid" id="devices-container">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Vulnerabilities Section -->
+            <section id="section-vulnerabilities" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Vulnerability Analysis</h1>
+                    <p class="subtitle">Detected security vulnerabilities</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="table is-fullwidth" id="vulnerabilities-table">
+                        <thead>
+                            <tr>
+                                <th>CVE</th>
+                                <th>Name</th>
+                                <th>Device</th>
+                                <th>Severity</th>
+                                <th>Description</th>
+                                <th>Remediation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Traffic Analysis Section -->
+            <section id="section-traffic" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Traffic Analysis</h1>
+                    <p class="subtitle">IoT protocol detection and traffic patterns</p>
+                </div>
+
+                <div class="notification is-warning">
+                    <span class="icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    <span>Traffic analysis requires packet capture privileges. Run the scanner with sudo for full functionality.</span>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="chart-container">
+                            <h2 class="subtitle">Protocol Distribution</h2>
+                            <canvas id="protocolDistributionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="column is-6">
+                        <div class="chart-container">
+                            <h2 class="subtitle">Traffic Volume</h2>
+                            <canvas id="trafficVolumeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h2 class="subtitle">Device Traffic Details</h2>
+                    <table class="table is-fullwidth" id="traffic-table">
+                        <thead>
+                            <tr>
+                                <th>Device</th>
+                                <th>IP Address</th>
+                                <th>Protocols</th>
+                                <th>Data Sent</th>
+                                <th>Data Received</th>
+                                <th>Last Activity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Exploit Tests Section -->
+            <section id="section-exploits" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Exploit Testing</h1>
+                    <p class="subtitle">Security validation through safe exploit attempts</p>
+                </div>
+
+                <div class="notification is-danger">
+                    <span class="icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </span>
+                    <span>Exploit testing should only be performed on networks you own or have explicit permission to test.</span>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-8">
+                        <div class="box">
+                            <h2 class="subtitle">Select Device for Testing</h2>
+                            <div class="field">
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="exploit-device-select">
+                                            <option value="">Select a device</option>
+                                            <!-- This will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 class="subtitle mt-4">Available Exploit Tests</h2>
+                            <div id="exploit-tests-container">
+                                <!-- This will be populated by JavaScript -->
+                            </div>
+
+                            <div class="field mt-4">
+                                <div class="control">
+                                    <button id="run-exploits-btn" class="button is-primary is-fullwidth" disabled>
+                                        <span class="icon">
+                                            <i class="fas fa-play"></i>
+                                        </span>
+                                        <span>Run Selected Tests</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-4">
+                        <div class="box">
+                            <h2 class="subtitle">Test Results</h2>
+                            <div id="exploit-results-container">
+                                <p class="has-text-grey-light">No tests have been run yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="section-settings" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Scan Settings</h1>
+                    <p class="subtitle">Configure scanner parameters</p>
+                </div>
+
+                <div class="box">
+                    <form id="settings-form">
+                        <div class="field">
+                            <label class="label">Network Range</label>
+                            <div class="control">
+                                <input class="input" type="text" id="setting-ip-range" placeholder="192.168.1.0/24">
+                            </div>
+                            <p class="help">Specify the IP range to scan in CIDR notation</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Scan Type</label>
+                            <div class="control">
+                                <label class="radio">
+                                    <input type="radio" name="scan-type" value="basic" checked>
+                                    Basic Scan
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="scan-type" value="full">
+                                    Full Security Scan
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Concurrency</label>
+                            <div class="control">
+                                <input class="input" type="number" id="setting-threads" min="1" max="50" value="10">
+                            </div>
+                            <p class="help">Number of concurrent scanning threads</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Timeout (seconds)</label>
+                            <div class="control">
+                                <input class="input" type="number" id="setting-timeout" min="1" max="60" value="5">
+                            </div>
+                            <p class="help">Timeout for network operations</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" id="setting-enable-pcap">
+                                Enable Traffic Analysis (requires root/sudo)
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" id="setting-enable-exploits">
+                                Enable Exploit Testing
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" class="button is-primary">Save Settings</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="section-reports" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Reports</h1>
+                    <p class="subtitle">Export and download scan reports</p>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-4">
+                        <div class="box">
+                            <h2 class="subtitle">Export Options</h2>
+                            <div class="buttons are-medium">
+                                <button class="button is-fullwidth is-info" id="export-json-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-file-code"></i>
+                                    </span>
+                                    <span>Export as JSON</span>
+                                </button>
+                                <button class="button is-fullwidth is-info" id="export-csv-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-file-csv"></i>
+                                    </span>
+                                    <span>Export as CSV</span>
+                                </button>
+                                <button class="button is-fullwidth is-info" id="export-report-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </span>
+                                    <span>Generate PDF Report</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-8">
+                        <div class="box">
+                            <h2 class="subtitle">Previous Scans</h2>
+                            <table class="table is-fullwidth" id="scan-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Devices Found</th>
+                                        <th>Vulnerabilities</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- This will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Scan History Section -->
+    <section id="section-scan-history" class="dashboard-section is-hidden">
+        <div class="dashboard-header">
+            <h1 class="title">Scan History</h1>
+            <p class="subtitle">Record of all previous network scans</p>
+        </div>
+
+        <div class="box">
+            <div class="filter-controls">
+                <div class="level">
+                    <div class="level-left">
+                        <div class="field has-addons">
+                            <div class="control">
+                                <input class="input" type="date" id="history-date-filter">
+                            </div>
+                            <div class="control">
+                                <button class="button is-info" id="apply-history-filter">Filter</button>
+                            </div>
+                            <div class="control">
+                                <button class="button" id="clear-history-filter">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <button class="button is-danger is-light" id="clear-history-btn">
+                            <span class="icon">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                            <span>Clear History</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table is-fullwidth is-hoverable" id="history-table">
+                <thead>
+                    <tr>
+                        <th>Scan ID</th>
+                        <th>Date & Time</th>
+                        <th>Network Range</th>
+                        <th>Devices Found</th>
+                        <th>Vulnerabilities</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- This will be populated dynamically -->
+                </tbody>
+            </table>
+
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                <a class="pagination-previous" id="history-prev-page">Previous</a>
+                <a class="pagination-next" id="history-next-page">Next</a>
+                <ul class="pagination-list" id="history-pagination">
+                    <!-- Pagination will be generated here -->
+                </ul>
+            </nav>
+        </div>
+    </section>
+    
+    <!-- Activity Logs Section -->
+    <section id="section-logs" class="dashboard-section is-hidden">
+        <div class="dashboard-header">
+            <h1 class="title">Activity Logs</h1>
+            <p class="subtitle">Real-time scanner activity and tool status</p>
+        </div>
+
+        <div class="columns">
+            <div class="column is-3">
+                <div class="box">
+                    <h3 class="subtitle">Log Controls</h3>
+                    <div class="field">
+                        <label class="label">Log Level</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="log-level-select">
+                                    <option value="debug">Debug (All)</option>
+                                    <option value="info" selected>Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="error">Error</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="label">Filter by Component</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="log-component-select">
+                                    <option value="all">All Components</option>
+                                    <option value="scanner">Scanner</option>
+                                    <option value="discovery">Discovery</option>
+                                    <option value="vulnerability">Vulnerability</option>
+                                    <option value="fingerprint">Fingerprint</option>
+                                    <option value="credentials">Credentials</option>
+                                    <option value="dashboard">Dashboard</option>
+                                    <option value="assistant">AI Assistant</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="button is-info is-fullwidth" id="refresh-logs-btn">
+                            <span class="icon">
+                                <i class="fas fa-sync"></i>
+                            </span>
+                            <span>Refresh Logs</span>
+                        </button>
+                        <button class="button is-light is-fullwidth" id="clear-logs-btn">
+                            <span class="icon">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                            <span>Clear Display</span>
+                        </button>
+                        <button class="button is-light is-fullwidth" id="download-logs-btn">
+                            <span class="icon">
+                                <i class="fas fa-download"></i>
+                            </span>
+                            <span>Download Logs</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="box">
+                    <h3 class="subtitle">Running Tools</h3>
+                    <div id="running-tools-container">
+                        <div class="has-text-centered has-text-grey-light" id="no-tools-message">
+                            <p><i class="fas fa-tools fa-2x"></i></p>
+                            <p>No active tools</p>
+                        </div>
+                        <!-- Active tools will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column is-9">
+                <div class="box" style="height: 600px; overflow-y: auto;">
+                    <div class="level">
+                        <div class="level-left">
+                            <h3 class="subtitle">Log Output</h3>
+                        </div>
+                        <div class="level-right">
+                            <div class="field">
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" placeholder="Search logs..." id="log-search">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="log-container" id="log-output">
+                        <table class="table is-fullwidth is-hoverable">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Level</th>
+                                    <th>Component</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-table-body">
+                                <!-- This will be populated dynamically -->
+                                <tr class="is-info">
+                                    <td>2025-05-17 03:34:34</td>
+                                    <td>INFO</td>
+                                    <td>Dashboard</td>
+                                    <td>Dashboard initialized and ready</td>
+                                </tr>
+                                <tr>
+                                    <td>2025-05-17 03:34:30</td>
+                                    <td>INFO</td>
+                                    <td>System</td>
+                                    <td>IoT Scanner started successfully</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Device Details Modal -->
+    <div class="modal" id="device-details-modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Device Details</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body" id="device-details-content">
+                <!-- This will be populated by JavaScript -->
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success">Remediate Issues</button>
+                <button class="button">Close</button>
+            </footer>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table is-fullwidth is-hoverable" id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Scan ID</th>
+                                <th>Date & Time</th>
+                                <th>Network Range</th>
+                                <th>Devices Found</th>
+                                <th>Vulnerabilities</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- This will be populated dynamically -->
+                        </tbody>
+                    </table>
+
+                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                        <a class="pagination-previous" id="history-prev-page">Previous</a>
+                        <a class="pagination-next" id="history-next-page">Next</a>
+                        <ul class="pagination-list" id="history-pagination">
+                            <!-- Pagination will be generated here -->
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Scan Details Modal -->
+                <div class="modal" id="scan-details-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Scan Details</p>
+                            <button class="delete" aria-label="close"></button>
+                        </header>
+                        <section class="modal-card-body" id="scan-details-content">
+                            <!-- This will be populated dynamically -->
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button" id="close-scan-details">Close</button>
+                            <button class="button is-info" id="export-scan-details">
+                                <span class="icon">
+                                    <i class="fas fa-download"></i>
+                                </span>
+                                <span>Export Details</span>
+                            </button>
+                        </footer>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Logs Section -->
+            <section id="section-logs" class="dashboard-section is-hidden">
+                <div class="dashboard-header">
+                    <h1 class="title">Activity Logs</h1>
+                    <p class="subtitle">Real-time scanner activity and tool status</p>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-3">
+                        <div class="box">
+                            <h3 class="subtitle">Log Controls</h3>
+                            <div class="field">
+                                <label class="label">Log Level</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="log-level-select">
+                                            <option value="debug">Debug (All)</option>
+                                            <option value="info" selected>Info</option>
+                                            <option value="warning">Warning</option>
+                                            <option value="error">Error</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="field">
+                                <label class="label">Filter by Component</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="log-component-select">
+                                            <option value="all">All Components</option>
+                                            <option value="scanner">Scanner</option>
+                                            <option value="discovery">Discovery</option>
+                                            <option value="vulnerability">Vulnerability</option>
+                                            <option value="fingerprint">Fingerprint</option>
+                                            <option value="credentials">Credentials</option>
+                                            <option value="dashboard">Dashboard</option>
+                                            <option value="assistant">AI Assistant</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="buttons">
+                                <button class="button is-info is-fullwidth" id="refresh-logs-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-sync"></i>
+                                    </span>
+                                    <span>Refresh Logs</span>
+                                </button>
+                                <button class="button is-light is-fullwidth" id="clear-logs-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span>Clear Display</span>
+                                </button>
+                                <button class="button is-light is-fullwidth" id="download-logs-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-download"></i>
+                                    </span>
+                                    <span>Download Logs</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="box">
+                            <h3 class="subtitle">Running Tools</h3>
+                            <div id="running-tools-container">
+                                <div class="has-text-centered has-text-grey-light" id="no-tools-message">
+                                    <p><i class="fas fa-tools fa-2x"></i></p>
+                                    <p>No active tools</p>
+                                </div>
+                                <!-- Active tools will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="column is-9">
+                        <div class="box" style="height: 600px; overflow-y: auto;">
+                            <div class="level">
+                                <div class="level-left">
+                                    <h3 class="subtitle">Log Output</h3>
+                                </div>
+                                <div class="level-right">
+                                    <div class="field">
+                                        <div class="control has-icons-left">
+                                            <input class="input" type="text" placeholder="Search logs..." id="log-search">
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="log-container" id="log-output">
+                                <table class="table is-fullwidth is-hoverable">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Level</th>
+                                            <th>Component</th>
+                                            <th>Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="log-table-body">
+                                        <!-- This will be populated dynamically -->
+                                        <tr class="is-info">
+                                            <td>2025-05-17 03:34:34</td>
+                                            <td>INFO</td>
+                                            <td>Dashboard</td>
+                                            <td>Dashboard initialized and ready</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-05-17 03:34:30</td>
+                                            <td>INFO</td>
+                                            <td>System</td>
+                                            <td>IoT Scanner started successfully</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Details Modal -->
+            <div class="modal" id="device-details-modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Device Details</p>
+                        <button class="delete" aria-label="close"></button>
+                    </header>
+                    <section class="modal-card-body" id="device-details-content">
+                        <!-- This will be populated by JavaScript -->
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success">Remediate Issues</button>
+                        <button class="button">Close</button>
+                    </footer>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+            <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

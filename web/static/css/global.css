@@ -1,0 +1,143 @@
+/* Global Styles for IoT Scanner */
+:root {
+  --primary-color: #3273dc;
+  --danger-color: #ff3860;
+  --warning-color: #ffdd57;
+  --success-color: #23d160;
+  --info-color: #209cee;
+  --dark-color: #363636;
+  --light-color: #f5f5f5;
+  --border-color: #dbdbdb;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #4a4a4a;
+  line-height: 1.5;
+}
+
+/* Common Components */
+.card {
+  border-radius: 6px;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(10, 10, 10, 0.15);
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-indicator.online {
+  background-color: var(--success-color);
+}
+
+.status-indicator.offline {
+  background-color: var(--danger-color);
+}
+
+.status-indicator.warning {
+  background-color: var(--warning-color);
+}
+
+/* Custom badges */
+.security-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.security-badge.secure {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.security-badge.vulnerable {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.security-badge.warning {
+  background-color: var(--warning-color);
+  color: #363636;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Responsive typography */
+@media screen and (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  h3 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Utility classes */
+.clickable {
+  cursor: pointer;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    font-size: 12pt;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+  
+  .table {
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    border: 1px solid #ddd;
+  }
+}
