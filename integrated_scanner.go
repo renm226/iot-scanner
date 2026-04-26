@@ -12,14 +12,13 @@ import (
 	"syscall"
 	"time"
 
-	"iot-scanner/pkg/api"
-ioiot-scanner
-	"iot-scanner
-	"iot-scanner/pkg/config"
-	"iot-scanner
-	"iot-scanner
-	"iot-scanner
+	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
+	"iot-scanner/pkg/api"
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/discovery"
+	"iot-scanner/pkg/fingerprint"
+	"iot-scanner/pkg/models"
 )
 
 // CVEData represents information about a CVE vulnerability

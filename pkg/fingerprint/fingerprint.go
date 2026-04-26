@@ -7,7 +7,7 @@ import (
 	"os"
 	"regexp"
 
-	"iot-scanner
+	"iot-scanner/pkg/config"
 	"iot-scanner/pkg/models"
 )
 

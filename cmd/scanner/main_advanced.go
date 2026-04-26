@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"iot-scanner
+	"iot-scanner/pkg/api"
 	"iot-scanner/pkg/config"
 	"iot-scanner/pkg/credentials"
 	"iot-scanner/pkg/discovery"

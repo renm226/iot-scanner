@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"iot-scanner/pkg/config"
-	"iot-scanner
+	"iot-scanner/pkg/models"
 	"github.com/sirupsen/logrus"
 )
 

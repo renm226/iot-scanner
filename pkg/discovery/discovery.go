@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"iot-scanner
-	"iot-scanner
+	"iot-scanner/pkg/config"
+	"iot-scanner/pkg/models"
 )
 
 // Device is an alias for models.Device

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"iot-scanner
+	"iot-scanner/pkg/config"
 	"iot-scanner/pkg/integration"
 	"github.com/sirupsen/logrus"
 )

@@ -1,10 +1,11 @@
 package api
 
 import (
-	"iot-scanner
 	"net/http"
 	"sync"
 	"time"
+
+	"iot-scanner/pkg/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

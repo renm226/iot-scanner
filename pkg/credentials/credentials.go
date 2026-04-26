@@ -10,8 +10,7 @@ import (
 	"strings"
 
 	"iot-scanner/pkg/config"
-
-	"iot-scanner
+	"iot-scanner/pkg/discovery"
 )
 
 // Checker checks for default credentials
