@@ -1,7 +1,4 @@
-/**
- * IoT Scanner Dashboard JavaScript
- * Main functionality for scan, logs, and AI assistant
- */
+
 
 // Global variables for state management
 let logs = [];
@@ -10,8 +7,7 @@ let scanHistory = [];
 // Document ready handler
 document.addEventListener('DOMContentLoaded', function() {
     console.log('IoT Scanner Dashboard initialized');
-    
-    // Initialize UI components
+   
     initializeUI();
     
     // Load initial data

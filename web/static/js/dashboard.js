@@ -1,4 +1,4 @@
-// Dashboard Initialization
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     initializeModals();

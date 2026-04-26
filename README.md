@@ -1,4 +1,10 @@
-# IoT Device Security Scanner
+#
+The fastest way to explore all features is simulation mode, which generates synthetic IoT devices with realistic vulnerabilities, open ports, and fingerprints no network or root access needed. Command go run ./cmd/scanner/ -test -dashboard -port 8080
+ 
+Figure 1: simulated results
+Resultimages\image.png 
+
+ IoT Device Security Scanner
 
 A real-time, agent-free network security tool written in Go that discovers, fingerprints, and assesses the security posture of IoT devices on a local network — all from a single scanning host, with no agents required on target devices.
 
